@@ -1,0 +1,11 @@
+awsdeployment:
+  build:
+    image: codeship/aws-deployment
+    dockerfile_path: Dockerfile
+integrationtest:
+  build:
+    image: codeship/aws-deployment-integrationtest
+    dockerfile_path: test/Dockerfile.integrationtest
+  encrypted_env_file: test/aws-deployment.env.encrypted
+cache:
+  image: codeship/aws-deployment:latest

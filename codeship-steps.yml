@@ -1,0 +1,13 @@
+- name: trigger_build
+  service: awsdeployment
+  command: true
+- service: integrationtest
+  command: aws s3 ls s3://codeship_aws_deployment_integration_test
+- service: integrationtest
+  command: aws s3 cp upload_to_s3 s3://codeship_aws_deployment_integration_test
+- service: awsdeployment
+  tag: master
+  type: push
+  image_name: codeship/aws-deployment
+  registry: https://index.docker.io/v1/
+  encrypted_dockercfg_path: dockercfg.encrypted
