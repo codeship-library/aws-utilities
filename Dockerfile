@@ -2,9 +2,9 @@ FROM alpine:latest
 MAINTAINER maintainers@codeship.com
 
 RUN apk --update add \
-    python \
-    py-pip \
     bash \
+    py-pip \
+    python \
     zip && \
   pip install awscli && \
   apk --purge del py-pip && \
