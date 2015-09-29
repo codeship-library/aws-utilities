@@ -1,9 +1,10 @@
-- name: trigger_build
-  service: awsdeployment
-  command: true
-- service: integrationtest
+- service: awsdeployment
+  command: bash -c " mkdir -p /deploy/tmp && zip -r /deploy/tmp/upload_to_s3.zip /deploy/test/upload_to_s3"
+- service: awsdeployment
   command: aws s3 ls s3://codeship_aws_deployment_integration_test
-- service: integrationtest
+- service: awsdeployment
+  command: aws s3 cp /deploy/tmp/upload_to_s3.zip s3://codeship_aws_deployment_integration_test
+- service: awsdeployment
   command: aws s3 cp /deploy/test/upload_to_s3 s3://codeship_aws_deployment_integration_test
 - service: awsdeployment
   tag: master

@@ -2,10 +2,6 @@ awsdeployment:
   build:
     image: codeship/aws-deployment
     dockerfile_path: Dockerfile
-integrationtest:
-  image: codeship/aws-deployment
   encrypted_env_file: test/aws-deployment.env.encrypted
   volumes:
     - ./:/deploy
-cache:
-  image: codeship/aws-deployment:latest
