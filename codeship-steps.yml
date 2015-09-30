@@ -1,5 +1,5 @@
 - service: awsdeployment
-  command: bash -c " mkdir -p /deploy/tmp && zip -r /deploy/tmp/upload_to_s3.zip /deploy/test/upload_to_s3"
+  command: /deploy/test/test_zip_available.sh
 - service: awsdeployment
   command: aws s3 ls s3://codeship_aws_deployment_integration_test
 - service: awsdeployment
