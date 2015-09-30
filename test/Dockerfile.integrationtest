@@ -1,1 +1,0 @@
-FROM codeship/aws-deployment:latest

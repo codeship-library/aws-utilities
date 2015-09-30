@@ -1,10 +1,11 @@
-- name: trigger_build
-  service: awsdeployment
-  command: true
-- service: integrationtest
+- service: awsdeployment
+  command: /deploy/test/test_zip_available.sh
+- service: awsdeployment
   command: aws s3 ls s3://codeship_aws_deployment_integration_test
-- service: integrationtest
-  command: aws s3 cp test/upload_to_s3 s3://codeship_aws_deployment_integration_test
+- service: awsdeployment
+  command: aws s3 cp /deploy/tmp/upload_to_s3.zip s3://codeship_aws_deployment_integration_test
+- service: awsdeployment
+  command: aws s3 cp /deploy/test/upload_to_s3 s3://codeship_aws_deployment_integration_test
 - service: awsdeployment
   tag: master
   type: push
