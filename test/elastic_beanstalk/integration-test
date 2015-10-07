@@ -18,7 +18,7 @@ source $DIR/../../scripts/elastic_beanstalk_environment_update.sh
 echo "Waiting for environment to start"
 
 while [ "$(environment_status)" != "Ready" ] ; do
-  sleep 5
+  sleep 10
   echo "."
 done
 

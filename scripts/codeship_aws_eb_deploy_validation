@@ -14,7 +14,7 @@ environment_status=$UPDATING_STATUS
 
 echo "Waiting for Environment to finish deployment"
 while [ "$(environment_status)" == "$UPDATING_STATUS" ] ; do
-  sleep 5
+  sleep 10
   describe_output=$(eb_describe)
   echo "."
 done
