@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+: ${AWS_ACCESS_KEY_ID:?'Set the AWS_ACCESS_KEY_ID environment variable'}
+: ${AWS_SECRET_ACCESS_KEY:?'Set the AWS_SECRET_ACCESS_KEY environment variable'}
+: ${AWS_DEFAULT_REGION:?'Set the AWS_DEFAULT_REGION environment variable'}
+
+SCRIPT_NAME=${1:?'You need to provide the action as the first parameter'}
+
+SCRIPT_PATH=$DIR/codeship_aws_$SCRIPT_NAME
+
+if [ -x $SCRIPT_PATH ]
+then
+  $SCRIPT_PATH "${@:2}"
+else
+  echo "ACTION ${SCRIPT_NAME} is currently not supported"
+  exit 1
+fi
