@@ -24,8 +24,7 @@ done
 
 mkdir -p tmp
 echo "Creating Zip file to deploy"
-pwd
-ls
+
 bash -c "cd $DIR && zip -x */.git* -x .git* -x *.hg* -r $DIR/../../tmp/package.zip ./"
 
 echo "Uploading to S3 for deployment"
@@ -48,8 +47,6 @@ function finish {
   echo "Removing ElasticBeanstalk application: $APPLICATION_NAME"
   aws elasticbeanstalk delete-application --terminate-env-by-force  --application-name $APPLICATION_NAME
 }
-
-finish
 
 trap "finish" EXIT
 trap "finish" ERR
