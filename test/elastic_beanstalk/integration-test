@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -o pipefail
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -22,24 +23,26 @@ while [ "$(environment_status)" != "Ready" ] ; do
   echo "."
 done
 
-mkdir -p tmp
+mkdir -p tmp/deployment
 echo "Creating Zip file to deploy"
 
-bash -c "cd $DIR && zip -x */.git* -x .git* -x *.hg* -r $DIR/../../tmp/package.zip ./"
+cp test/elastic_beanstalk/Dockerfile tmp/deployment
+echo $CI_COMMIT_ID > tmp/deployment/index.html
 
-echo "Uploading to S3 for deployment"
-aws s3 cp tmp/package.zip s3://elasticbeanstalkcodeupload
+codeship_aws eb_deploy /deploy/tmp/deployment $APPLICATION_NAME $ENVIRONMENT_NAME "elasticbeanstalkcodeupload"
 
-echo "Removing old ElasticBeanstalk version"
-aws elasticbeanstalk delete-application-version --application-name $APPLICATION_NAME --version-label $CI_COMMIT_ID || true
+echo "Checking Environment if deployment matches ci commit hash"
+deployed_commit_id=`curl -s $(environment_cname)`
 
-echo "Creating ElasticBeanstalk version"
-aws elasticbeanstalk create-application-version --application-name "$APPLICATION_NAME" --description "DESCRIPTION" --version-label "$CI_COMMIT_ID" --source-bundle "S3Bucket=elasticbeanstalkcodeupload,S3Key=package.zip"
-
-echo "Updating ElasticBeanstalk environment"
-aws elasticbeanstalk update-environment --environment-name $ENVIRONMENT_NAME --version-label $CI_COMMIT_ID
-
-codeship_aws eb_deploy_validation $APPLICATION_NAME $ENVIRONMENT_NAME $CI_COMMIT_ID
+if [ "$deployed_commit_id" == "$CI_COMMIT_ID" ]
+then
+  echo "Matching Commit Hashes, deployment successful"
+else
+  echo "Commit Hashes did not match:"
+  echo "CI_COMMIT_ID: $CI_COMMIT_ID"
+  echo "DEPLOYED: $deployed_commit_id"
+  exit 1
+fi
 
 function finish {
   echo "Removing ElasticBeanstalk running environment: $ENVIRONMENT_NAME"

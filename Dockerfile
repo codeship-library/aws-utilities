@@ -6,6 +6,7 @@ RUN apk --update add \
     jq \
     py-pip \
     python \
+    curl \
     zip && \
   pip install awscli && \
   apk --purge del py-pip && \
