@@ -10,12 +10,9 @@ ENVIRONMENT_VERSION=${3:?'You need to provide the version identifier that should
 
 source $DIR/elastic_beanstalk_environment_update.sh
 
-environment_status=$UPDATING_STATUS
-
 echo "Waiting for Environment to finish deployment"
 while [ "$(environment_status)" == "$UPDATING_STATUS" ] ; do
   sleep 10
-  describe_output=$(eb_describe)
   echo "."
 done
 
