@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+APPLICATION_FOLDER=${1:?'You need to provide the directory with your code as the second parameter'}
+APPLICATION_NAME=${2:?'You need to provide the Elastic Beanstalk application name'}
+ENVIRONMENT_NAME=${3:?'You need to provide the Elastic Beanstalk environment name'}
+S3_BUCKET=${4:?'You need to provide the S3 Bucket to upload the artefact to'}
+
+echo "Starting ElasticBeanstalk deployment to $APPLICATION_NAME:$ENVIRONMENT_NAME"
+
+echo "CHANGING Directory to $APPLICATION_FOLDER"
+cd $APPLICATION_FOLDER
+
+VERSION_NAME=${CI_COMMIT_ID}-${CI_BUILD_ID}-`date +%Y-%m-%d.%H:%M:%S`
+FILE_NAME=$VERSION_NAME.zip
+DEPLOYMENT_FILE_NAME=/tmp/$FILE_NAME
+
+echo "Creating Zip file to deploy in $DEPLOYMENT_FILE_NAME"
+zip -x */.git* -x .git* -x *.hg* -r "$DEPLOYMENT_FILE_NAME" ./
+
+echo "Uploading to S3 for deployment"
+aws s3 cp "$DEPLOYMENT_FILE_NAME" "s3://$S3_BUCKET"
+
+echo "Creating ElasticBeanstalk version: $VERSION_NAME"
+aws elasticbeanstalk create-application-version --application-name "$APPLICATION_NAME" --description "${CI_MESSAGE:0:200}" --version-label "$VERSION_NAME" --source-bundle "S3Bucket=$S3_BUCKET,S3Key=$FILE_NAME"
+
+echo "Updating ElasticBeanstalk environment"
+aws elasticbeanstalk update-environment --environment-name "$ENVIRONMENT_NAME" --version-label "$VERSION_NAME"
+
+echo "Validating deployment"
+codeship_aws eb_deploy_validation "$APPLICATION_NAME" "$ENVIRONMENT_NAME" "$VERSION_NAME"

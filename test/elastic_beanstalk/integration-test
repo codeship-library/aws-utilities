@@ -1,0 +1,55 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd $DIR/../..
+
+APPLICATION_NAME=`date +%s`
+ENVIRONMENT_NAME=$APPLICATION_NAME
+
+aws elasticbeanstalk create-application --application-name $APPLICATION_NAME
+
+aws elasticbeanstalk create-environment --application-name $APPLICATION_NAME --environment-name $APPLICATION_NAME --solution-stack-name "64bit Amazon Linux 2015.03 v2.0.2 running Docker 1.7.1"
+
+source $DIR/../../scripts/elastic_beanstalk_environment_update.sh
+
+echo "Waiting for environment to start"
+
+while [ "$(environment_status)" != "Ready" ] ; do
+  sleep 10
+  echo "."
+done
+
+mkdir -p tmp/deployment
+echo "Creating Zip file to deploy"
+
+cp test/elastic_beanstalk/Dockerfile tmp/deployment
+echo $CI_COMMIT_ID > tmp/deployment/index.html
+
+codeship_aws eb_deploy /deploy/tmp/deployment $APPLICATION_NAME $ENVIRONMENT_NAME "elasticbeanstalkcodeupload"
+
+echo "Checking Environment if deployment matches ci commit hash"
+deployed_commit_id=`curl -s $(environment_cname)`
+
+if [ "$deployed_commit_id" == "$CI_COMMIT_ID" ]
+then
+  echo "Matching Commit Hashes, deployment successful"
+else
+  echo "Commit Hashes did not match:"
+  echo "CI_COMMIT_ID: $CI_COMMIT_ID"
+  echo "DEPLOYED: $deployed_commit_id"
+  exit 1
+fi
+
+function finish {
+  echo "Removing ElasticBeanstalk running environment: $ENVIRONMENT_NAME"
+  aws elasticbeanstalk terminate-environment --environment-name $ENVIRONMENT_NAME
+  echo "Removing ElasticBeanstalk application: $APPLICATION_NAME"
+  aws elasticbeanstalk delete-application --terminate-env-by-force  --application-name $APPLICATION_NAME
+}
+
+trap "finish" EXIT
+trap "finish" ERR

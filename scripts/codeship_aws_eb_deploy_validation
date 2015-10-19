@@ -1,0 +1,35 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+UPDATING_STATUS="Updating"
+
+APPLICATION_NAME=${1:?'You need to provide the Elastic Beanstalk application name'}
+ENVIRONMENT_NAME=${2:?'You need to provide the Elastic Beanstalk environment name'}
+ENVIRONMENT_VERSION=${3:?'You need to provide the version identifier that should be deployed'}
+
+source $DIR/elastic_beanstalk_environment_update.sh
+
+echo "Waiting for Environment to finish deployment"
+while [ "$(environment_status)" == "$UPDATING_STATUS" ] ; do
+  sleep 10
+  echo "."
+done
+
+echo "Deployment process finished, checking success of deployment"
+
+if [ "$(environment_health)" == "Green" ]
+then
+  echo "Environment in a healthy state"
+else
+  echo "Environment in an unhealthy state"
+  exit 1
+fi
+
+if [ "$(environment_version)" == "$ENVIRONMENT_VERSION" ]
+then
+  echo "New Version deployed"
+else
+  echo "Deployment failed, still running old version"
+  exit 1
+fi
