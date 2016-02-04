@@ -27,7 +27,6 @@ if [ "$(environment_status)" == "Succeeded" ]
 then
   exit_status=0
 else
-
   exit_status=1
 fi
 
