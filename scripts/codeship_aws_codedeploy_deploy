@@ -8,14 +8,14 @@ APPLICATION_NAME=${2:?'You need to provide the CodeDeploy application name'}
 DEPLOYMENT_GROUP_NAME=${3:?'You need to provide the Deployment Group name'}
 S3_BUCKET=${4:?'You need to provide the S3 Bucket to upload the artefact to'}
 
-echo "Starting CodeDeploy deployment to $APPLICATION_NAME"
+echo "Starting CodeDeploy deployment to $APPLICATION_NAME:$DEPLOYMENT_GROUP_NAME"
 
 VERSION_NAME=${CI_COMMIT_ID}-${CI_BUILD_ID}-`date +%Y-%m-%d.%H:%M:%S`
 FILE_NAME=$VERSION_NAME.zip
 DEPLOYMENT_FILE_NAME=/tmp/$FILE_NAME
 S3_PATH=s3://$S3_BUCKET/$FILE_NAME
 
-aws deploy push --application-name $APPLICATION_NAME --description "$COMMIT_MESSAGE" --ignore-hidden-files --s3-location $S3_PATH --source $APPLICATION_FOLDER
+aws deploy push --application-name $APPLICATION_NAME --description "$COMMIT_MESSAGE" --ignore-hidden-files --s3-location $S3_PATH --source $APPLICATION_FOLDER > /dev/null
 
 echo "Creating new Deployment: $VERSION_NAME"
 

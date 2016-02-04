@@ -1,13 +1,17 @@
-- service: awsdeployment
-  command: /deploy/test/test_tools_available.sh
-- service: awsdeployment
-  command: aws s3 ls s3://codeship_aws_deployment_integration_test
-- service: awsdeployment
-  command: aws s3 cp /deploy/tmp/upload_to_s3.zip s3://codeship_aws_deployment_integration_test
-- service: awsdeployment
-  command: aws s3 cp /deploy/test/upload_to_s3 s3://codeship_aws_deployment_integration_test
-- service: awsdeployment
-  command: /deploy/test/elastic_beanstalk/integration-test
+- type: parallel
+  steps:
+  - service: awsdeployment
+    command: /deploy/test/test_tools_available.sh
+  - service: awsdeployment
+    command: aws s3 ls s3://codeship_aws_deployment_integration_test
+  - service: awsdeployment
+    command: aws s3 cp /deploy/tmp/upload_to_s3.zip s3://codeship_aws_deployment_integration_test
+  - service: awsdeployment
+    command: aws s3 cp /deploy/test/upload_to_s3 s3://codeship_aws_deployment_integration_test
+  - service: awsdeployment
+    command: /deploy/test/elastic_beanstalk/integration-test
+  - service: awsdeployment
+    command: /deploy/test/code_deploy/integration-test
 - service: awsdeployment
   tag: master
   type: push
