@@ -1,7 +1,7 @@
+- service: awsdeployment
+  command: /deploy/test/test_tools_available.sh
 - type: parallel
   steps:
-  - service: awsdeployment
-    command: /deploy/test/test_tools_available.sh
   - service: awsdeployment
     command: aws s3 ls s3://codeship_aws_deployment_integration_test
   - service: awsdeployment
