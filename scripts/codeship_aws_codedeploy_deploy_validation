@@ -1,0 +1,35 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+DEPLOYMENT_ID=${1:?'You need to provide the Deployment Id that should be validated'}
+
+function get_deployment(){
+  aws deploy get-deployment --deployment-id $DEPLOYMENT_ID
+}
+
+function environment_status(){
+  echo "$(get_deployment)" | jq -r .deploymentInfo.status
+}
+
+echo "Waiting for Deployment to finish"
+until [[ "$(environment_status)" =~ (Succeeded|Failed|Stopped) ]] ; do
+  sleep 10
+  echo "."
+done
+
+echo "Deployment process finished, checking success of deployment"
+
+if [ "$(environment_status)" == "Succeeded" ]
+then
+  exit_status=0
+else
+  exit_status=1
+fi
+
+echo "Deployment $(environment_status)"
+
+exit $exit_status

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+APPLICATION_FOLDER=${1:?'You need to provide the directory with your code as the second parameter'}
+APPLICATION_NAME=${2:?'You need to provide the CodeDeploy application name'}
+DEPLOYMENT_GROUP_NAME=${3:?'You need to provide the Deployment Group name'}
+S3_BUCKET=${4:?'You need to provide the S3 Bucket to upload the artefact to'}
+
+echo "Starting CodeDeploy deployment to $APPLICATION_NAME:$DEPLOYMENT_GROUP_NAME"
+
+VERSION_NAME=${CI_COMMIT_ID}-${CI_BUILD_ID}-`date +%Y-%m-%d.%H:%M:%S`
+FILE_NAME=$VERSION_NAME.zip
+DEPLOYMENT_FILE_NAME=/tmp/$FILE_NAME
+S3_PATH=s3://$S3_BUCKET/$FILE_NAME
+
+aws deploy push --application-name $APPLICATION_NAME --description "$COMMIT_MESSAGE" --ignore-hidden-files --s3-location $S3_PATH --source $APPLICATION_FOLDER > /dev/null
+
+echo "Creating new Deployment: $VERSION_NAME"
+
+deployment_id=`aws deploy create-deployment --application-name $APPLICATION_NAME --deployment-group-name $DEPLOYMENT_GROUP_NAME --description "$COMMIT_MESSAGE" --s3-location bucket=$S3_BUCKET,key=$FILE_NAME,bundleType=zip | jq -r .deploymentId`
+
+echo "Validating deployment: $deployment_id"
+codeship_aws codedeploy_deploy_validation "$deployment_id"
