@@ -14,7 +14,7 @@ echo -e "\033[0;36mEnvironment: ${EB_ENV_NAME}\033[0m"
 
 # set some basic variables required for the deployment
 EB_ENV_VERSION="${CI_COMMIT_ID}-${CI_BUILD_ID}-$(date +%Y-%m-%d.%H:%M:%S)"
-DEPLOYMENT_ARCHIVE:="/tmp/${EB_ENV_VERSION:0:100}.zip"
+DEPLOYMENT_ARCHIVE="/tmp/${EB_ENV_VERSION:0:100}.zip"
 
 echo -e "\033[0;37mSwitching to application directory ${APP_FOLDER}\033[0m"
 cd "${APP_FOLDER}"
