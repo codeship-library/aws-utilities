@@ -1,3 +1,4 @@
-codeship.aes
 aws-deployment.env
+codeship.aes
+dockercfg
 tmp
