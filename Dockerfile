@@ -1,15 +1,15 @@
-FROM alpine:latest
+FROM python:3.5-alpine
 MAINTAINER maintainers@codeship.com
 
-RUN apk --update add \
+ENV \
+  PIP_DISABLE_PIP_VERSION_CHECK=true
+
+RUN \
+  apk --no-cache add \
     bash \
-    jq \
-    py-pip \
-    python \
     curl \
+    jq \
     zip && \
-  pip install awscli && \
-  apk --purge del py-pip && \
-  rm var/cache/apk/*
+  pip install awscli
 
 COPY scripts/ /usr/bin/
