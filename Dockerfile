@@ -2,6 +2,7 @@ FROM python:3.5-alpine
 MAINTAINER maintainers@codeship.com
 
 ENV \
+  AWS_CLI_VERSION="1.10.59" \
   PIP_DISABLE_PIP_VERSION_CHECK=true
 
 RUN \
@@ -10,6 +11,6 @@ RUN \
     curl \
     jq \
     zip && \
-  pip install awscli
+  pip install awscli==${AWS_CLI_VERSION}
 
 COPY scripts/ /usr/bin/
