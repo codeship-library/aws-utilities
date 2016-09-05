@@ -2,7 +2,7 @@ FROM python:3.5-alpine
 MAINTAINER maintainers@codeship.com
 
 ENV \
-  AWS_CLI_VERSION="1.10.60" \
+  AWS_CLI_VERSION="1.10.61" \
   PIP_DISABLE_PIP_VERSION_CHECK=true
 
 RUN \
