@@ -1,24 +1,40 @@
-- name: Check for tooling
-  service: awsdeployment
-  command: /deploy/test/test_tools_available.sh
-- name: Tests
+- name: Build
   type: parallel
-  service: awsdeployment
   steps:
-  - name: S3, LS
-    command: aws s3 ls s3://codeship_aws_deployment_integration_test
-  - name: S3, CP Archive
-    command: aws s3 cp /deploy/tmp/upload_to_s3.zip s3://codeship_aws_deployment_integration_test
-  - name: S3, CP
-    command: aws s3 cp /deploy/test/upload_to_s3 s3://codeship_aws_deployment_integration_test
-  - name: Elastic Beanstalk
-    command: /deploy/test/elastic_beanstalk/integration-test
-  - name: Code Deploy
-    command: /deploy/test/code_deploy/integration-test
-- name: Deploy
-  service: awsdeployment
-  tag: master
-  type: push
-  image_name: codeship/aws-deployment
-  registry: https://index.docker.io/v1/
-  encrypted_dockercfg_path: dockercfg.encrypted
+    - name: AWS Base
+      service: base
+      command: true
+    - name: AWS Deployment
+      service: deployment
+      command: true
+- name: Test
+  type: serial
+  steps:
+    - name: AWS Deployment
+      type: serial
+      service: deployment
+      steps:
+        - name: Check for tooling
+          command: /deploy/test/test_tools_available.sh
+        - name: Tests
+          type: parallel
+          steps:
+          - name: S3, LS
+            command: aws s3 ls s3://codeship_aws_deployment_integration_test
+          - name: S3, CP Archive
+            command: aws s3 cp /deploy/tmp/upload_to_s3.zip s3://codeship_aws_deployment_integration_test
+          - name: S3, CP
+            command: aws s3 cp /deploy/test/upload_to_s3 s3://codeship_aws_deployment_integration_test
+          - name: Elastic Beanstalk
+            command: /deploy/test/elastic_beanstalk/integration-test
+          - name: Code Deploy
+            command: /deploy/test/code_deploy/integration-test
+- name: Deploy (to Docker Hub)
+  type: serial
+  steps:
+    - name: AWS Deployment
+      service: awsdeployment
+      tag: master
+      type: push
+      image_name: codeship/aws-deployment
+      encrypted_dockercfg_path: dockercfg.encrypted

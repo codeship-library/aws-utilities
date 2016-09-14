@@ -6,11 +6,5 @@ ENV \
   PIP_DISABLE_PIP_VERSION_CHECK=true
 
 RUN \
-  apk --no-cache add \
-    bash \
-    curl \
-    jq \
-    zip && \
-  pip install awscli==${AWS_CLI_VERSION}
-
-COPY scripts/ /usr/bin/
+  pip install awscli==${AWS_CLI_VERSION} && \
+  mkdir -p "${HOME}/.aws"

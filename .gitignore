@@ -1,4 +1,4 @@
-aws-deployment.env
+aws.env
 codeship.aes
 dockercfg
 tmp

@@ -1,9 +1,13 @@
-awsdeployment:
+base:
+  build:
+    image: codeship/aws-base
+    path: ./base
+    dockerfile_path: Dockerfile
+deployment:
   build:
     image: codeship/aws-deployment
+    path: ./deployment
     dockerfile_path: Dockerfile
-  encrypted_env_file: test/aws-deployment.env.encrypted
-  environment:
-    - AWS_DEFAULT_REGION=us-east-1
+  encrypted_env_file: aws.env.encrypted
   volumes:
-    - ./:/deploy
+    - ./deployment:/deploy
