@@ -1,0 +1,10 @@
+- service: demo
+  type: push
+  image_name: 870119404647.dkr.ecr.us-east-1.amazonaws.com/codeship-testing
+  registry: https://870119404647.dkr.ecr.us-east-1.amazonaws.com
+  dockercfg_service: aws_dockercfg
+- service: aws
+  tag: master
+  type: push
+  image_name: codeship/aws-ecr-dockercfg-generator
+  encrypted_dockercfg_path: dockercfg.encrypted

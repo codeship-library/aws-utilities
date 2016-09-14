@@ -1,0 +1,8 @@
+FROM alpine:3.4
+MAINTAINER maintainers@codeship.com
+
+RUN \
+  echo "Hello ECR at $(date)" > hello.txt && \
+  cat hello.txt
+
+CMD ["cat hello.txt"]

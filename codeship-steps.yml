@@ -7,6 +7,9 @@
     - name: AWS Deployment
       service: deployment
       command: true
+    - name: AWS dockercfg Generator
+      service: dockercfg-generator
+      command: true
 - name: Test
   type: serial
   steps:
@@ -29,6 +32,12 @@
             command: /deploy/test/elastic_beanstalk/integration-test
           - name: Code Deploy
             command: /deploy/test/code_deploy/integration-test
+    - name: AWS dockercfg Generator
+      service: dockercfg-test
+      type: push
+      image_name: 870119404647.dkr.ecr.us-east-1.amazonaws.com/codeship-testing
+      registry: https://870119404647.dkr.ecr.us-east-1.amazonaws.com
+      dockercfg_service: dockercfg-test-generator
 - name: Deploy (to Docker Hub)
   type: serial
   steps:
@@ -37,4 +46,10 @@
       tag: master
       type: push
       image_name: codeship/aws-deployment
+      encrypted_dockercfg_path: dockercfg.encrypted
+    - name: AWS dockercfg Generator
+      service: dockercfg-generator
+      tag: master
+      type: push
+      image_name: codeship/aws-ecr-dockercfg-generator
       encrypted_dockercfg_path: dockercfg.encrypted
