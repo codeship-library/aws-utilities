@@ -11,17 +11,17 @@ deployment:
   encrypted_env_file: aws.env.encrypted
   volumes:
     - ./deployment:/deploy
-dockercfg-generator:
+dockercfg_generator:
   build:
     image: codeship/aws-ecr-dockercfg-generator
     path: ./dockercfg-generator
     dockerfile_path: Dockerfile
-dockercfg-test:
+dockercfg_test:
   build:
     image: 870119404647.dkr.ecr.us-east-1.amazonaws.com/codeship-testing
     path: ./dockercfg-generator
     dockerfile_path: Dockerfile.test
-dockercfg-test-generator:
+dockercfg_test_generator:
   image: codeship/aws-ecr-dockercfg-generator
   add_docker: true
   encrypted_env_file: aws.env.encrypted
