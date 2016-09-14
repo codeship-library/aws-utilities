@@ -10,3 +10,10 @@ This container allows you to generate a temporary dockercfg using your AWS crede
 
 See the [dockercfg-generator ReadMe](dockercfg-generator/README.md) for more details and usage instructions.
 
+## Contributing
+
+We are happy to hear your feedback. Please read our [contributing guidelines](CONTRIBUTING.md) and the [code of conduct](CODE_OF_CONDUCT.md) before you submit a pull request or open a ticket.
+
+## License
+
+see [LICENSE](LICENSE)
