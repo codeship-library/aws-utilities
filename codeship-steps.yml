@@ -2,7 +2,7 @@
   service: base
   command: true
 - name: Test
-  type: serial
+  type: parallel
   steps:
     - name: Test Deployment
       type: serial
