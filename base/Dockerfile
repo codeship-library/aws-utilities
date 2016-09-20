@@ -1,9 +1,10 @@
 FROM python:3.5-alpine
 MAINTAINER maintainers@codeship.com
 
-ENV \
-  AWS_CLI_VERSION="1.10.64" \
-  PIP_DISABLE_PIP_VERSION_CHECK=true
+# which version of the AWS CLI to install.
+ARG AWS_CLI_VERSION="1.10.64"
+
+ENV PIP_DISABLE_PIP_VERSION_CHECK=true
 
 RUN \
   pip install awscli==${AWS_CLI_VERSION} && \
