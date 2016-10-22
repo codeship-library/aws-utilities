@@ -2,7 +2,7 @@ FROM python:3.5-alpine
 MAINTAINER maintainers@codeship.com
 
 # which version of the AWS CLI to install.
-ARG AWS_CLI_VERSION="1.11.7"
+ARG AWS_CLI_VERSION="1.11.8"
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=true
 
