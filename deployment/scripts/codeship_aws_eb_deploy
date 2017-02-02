@@ -18,7 +18,7 @@ FILE_NAME=$VERSION_NAME.zip
 DEPLOYMENT_FILE_NAME=/tmp/$FILE_NAME
 
 echo "Creating Zip file to deploy in $DEPLOYMENT_FILE_NAME"
-zip -x */.git* -x .git* -x *.hg* -r "$DEPLOYMENT_FILE_NAME" ./
+zip -x *.git* -x *.hg* -r "$DEPLOYMENT_FILE_NAME" ./
 
 echo "Uploading to S3 for deployment"
 aws s3 cp "$DEPLOYMENT_FILE_NAME" "s3://$S3_BUCKET"
