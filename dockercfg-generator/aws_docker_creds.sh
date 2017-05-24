@@ -34,7 +34,7 @@ fi
 
 # fetching aws docker login
 echo "Logging into AWS ECR"
-$(aws ecr get-login)
+$(aws ecr get-login --no-include-email)
 
 # writing aws docker creds to desired path
 echo "Writing Docker creds to $1"
