@@ -3,7 +3,7 @@ MAINTAINER maintainers@codeship.com
 
 # which version of the AWS CLI to install.
 # https://pypi.python.org/pypi/awscli
-ARG AWS_CLI_VERSION="1.11.91"
+ARG AWS_CLI_VERSION="1.11.97"
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=true
 
