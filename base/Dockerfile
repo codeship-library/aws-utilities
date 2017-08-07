@@ -1,5 +1,5 @@
 FROM python:3.6-alpine
-MAINTAINER maintainers@codeship.com
+LABEL maintainer='Codeship Inc., <maintainers@codeship.com>'
 
 # which version of the AWS CLI to install.
 # https://pypi.python.org/pypi/awscli
