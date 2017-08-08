@@ -1,5 +1,5 @@
 FROM codeship/aws-base:latest
-MAINTAINER maintainers@codeship.com
+LABEL maintainer='Codeship Inc., <maintainers@codeship.com>'
 
 RUN \
   apk --no-cache add \

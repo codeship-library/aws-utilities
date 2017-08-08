@@ -1,5 +1,5 @@
-FROM alpine:3.4
-MAINTAINER maintainers@codeship.com
+FROM alpine:3.6
+LABEL maintainer='Codeship Inc., <maintainers@codeship.com>'
 
 RUN \
   echo "Hello ECR at $(date)" > hello.txt && \
