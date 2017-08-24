@@ -32,12 +32,16 @@ if [[ -n $AWS_STS_ROLE || -n $AWS_STS_ACCOUNT ]]; then
   export AWS_SESSION_EXPIRATION=$(cat ${aws_tmp} | jq -r ".Credentials.Expiration")
 fi
 
+registry_id=''
+if [[ -n $AWS_ECR_REGISTRY_IDS ]]; then
+  registry_ids="--registry-ids $AWS_ECR_REGISTRY_IDS"
+fi
+
 # fetching aws docker login
 echo "Logging into AWS ECR"
-$(aws ecr get-login --no-include-email)
+$(aws ecr get-login --no-include-email ${registry_ids})
 
 # writing aws docker creds to desired path
 echo "Writing Docker creds to $1"
 chmod 544 ~/.docker/config.json
 cp ~/.docker/config.json $1
-

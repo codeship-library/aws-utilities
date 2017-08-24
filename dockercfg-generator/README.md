@@ -26,14 +26,17 @@ As per AWS documentation, this dockercfg should be valid for 48 hours.
 
 Codeship supports using custom images to generate dockercfg files during the build process. To use this image to integrate with AWS ECR, simply define a entry in your services file for this image, and reference it from any steps or services which need to interact with ECR repositories with the `dockercfg_service` field. You'll also need to provide the following environment variables using an [encrypted env file](https://codeship.com/documentation/docker/encryption/):
 
-* AWS_REGION - Your selected AWS Region, ensure this is a region suppoing AWS ECR
-* AWS_ACCESS_KEY_ID - Your AWS Access Key
-* AWS_SECRET_ACCESS_KEY - Your AWS Access Secret
+* `AWS_REGION` - Your selected AWS Region, ensure this is a region supporting AWS ECR
+* `AWS_ACCESS_KEY_ID` - Your AWS Access Key
+* `AWS_SECRET_ACCESS_KEY` - Your AWS Access Secret
 
 Optionally, you can also set the following variables to assume a role across accounts before generating the dockercfg:
 
-* AWS_STS_ROLE - The AWS role to assume
-* AWS_STS_ACCOUNT - The AWS account the role exists in
+* `AWS_STS_ROLE` - The AWS role to assume
+* `AWS_STS_ACCOUNT` - The AWS account the role exists in
+
+If you are using an ECR registry in another AWS account to the IAM user but you aren't using a role, a list of AWS account IDs that correspond to the registries that you want to log in to can be specified:
+* `AWS_ECR_REGISTRY_IDS` - A space separated list of AWS account IDs
 
 Here is an example of using and ECR Dockercfg generator to authenticate pushing an image.
 
