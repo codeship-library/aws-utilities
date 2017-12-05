@@ -1,54 +1,80 @@
 #!/bin/bash
 
-set -e
-set -o pipefail
-
-STACK_NAME='CodeDeployDemoStack'
-CODEDEPLOY_TAG_NAME='CodeDeployIntegrationTestTag'
-CODEDEPLOY_TAG_VALUE='CodeDeployIntegrationTestTagValue'
-
-aws cloudformation create-stack \
-  --stack-name $STACK_NAME \
-  --template-url http://s3.amazonaws.com/aws-codedeploy-us-east-1/templates/latest/CodeDeploy_SampleCF_Template.json \
-  --parameters ParameterKey=InstanceCount,ParameterValue=1 ParameterKey=InstanceType,ParameterValue=t1.micro \
-    ParameterKey=KeyPairName,ParameterValue=CodeDeploy ParameterKey=OperatingSystem,ParameterValue=Linux \
-    ParameterKey=SSHLocation,ParameterValue=0.0.0.0/0 ParameterKey=TagKey,ParameterValue=$CODEDEPLOY_TAG_NAME \
-    ParameterKey=TagValue,ParameterValue=$CODEDEPLOY_TAG_VALUE \
-  --capabilities CAPABILITY_IAM
-
+function debug() { echo -e "\033[0;37m$*\033[0m"; }
+function info() { echo -e "\033[0;36m$*\033[0m"; }
+function error() { >&2  echo -e "\033[0;31m$*\033[0m"; }
+function fail() { error ${1}; exit ${2:-1}; }
 
 function describe-stack(){
-  aws cloudformation describe-stacks --stack-name CodeDeployDemoStack
+  aws cloudformation describe-stacks --stack-name "${STACK_NAME}"
 }
-
 function stack_status(){
   echo "$(describe-stack)" | jq -r .Stacks[0].StackStatus
 }
-
 function security_group_arn(){
   echo "$(describe-stack)" | jq -r .Stacks[0].Outputs[0].OutputValue
 }
 
-echo "Waiting for Cloudformation Stack to be ready"
+function cleanup() {
+  info "Delete CodeDeploy deployment group called ${DEPLOYMENT_GROUP_NAME}"
+  aws deploy delete-deployment-group \
+    --application-name "${APPLICATION_NAME}" \
+    --deployment-group-name "${DEPLOYMENT_GROUP_NAME}"
+
+  info "Delete CodeDeploy application called ${APPLICATION_NAME}"
+  aws deploy delete-application \
+    --application-name "${APPLICATION_NAME}"
+
+  info "Delete CloudFormation stack called ${STACK_NAME}"
+  aws cloudformation delete-stack \
+    --stack-name "${STACK_NAME}"
+}
+trap cleanup EXIT
+
+STACK_NAME="aws-utilities-stack-$(date +%s)"
+CODEDEPLOY_TAG_NAME='CodeDeployIntegrationTestTag'
+CODEDEPLOY_TAG_VALUE='CodeDeployIntegrationTestTagValue'
+APPLICATION_NAME="aws-utilities-cd-$(date +%s)"
+DEPLOYMENT_GROUP_NAME="deployment-$(date +%s)"
+S3_BUCKET="codeship-codedeploy-bucket"
+
+set -eo pipefail
+
+info "Creating a new CloudFormation stack called ${STACK_NAME}"
+aws cloudformation create-stack \
+  --stack-name "${STACK_NAME}" \
+  --template-url "http://s3.amazonaws.com/aws-codedeploy-us-east-1/templates/latest/CodeDeploy_SampleCF_Template.json" \
+  --parameters \
+      ParameterKey=InstanceCount,ParameterValue=1 \
+      ParameterKey=InstanceType,ParameterValue=t1.micro \
+      ParameterKey=KeyPairName,ParameterValue=CodeDeploy \
+      ParameterKey=OperatingSystem,ParameterValue=Linux \
+      ParameterKey=SSHLocation,ParameterValue=0.0.0.0/0 \
+      ParameterKey=TagKey,ParameterValue=${CODEDEPLOY_TAG_NAME} \
+      ParameterKey=TagValue,ParameterValue=${CODEDEPLOY_TAG_VALUE} \
+  --capabilities CAPABILITY_IAM
+
+info "Waiting for CloudFormation Stack to be ready"
 while [[ "$(stack_status)" =~ .*IN_PROGRESS$ ]] ; do
   sleep 10
   echo "."
 done
 
-APPLICATION_NAME=`date +%s`
-DEPLOYMENT_GROUP_NAME=`date +%s`
+info "Create CodeDeploy application called ${APPLICATION_NAME}"
+aws deploy create-application \
+  --application-name "${APPLICATION_NAME}"
 
-# Set up CloudDeploy application
-aws deploy create-application --application-name $APPLICATION_NAME
+info "Create CodeDeplot deployment group called ${DEPLOYMENT_GROUP_NAME}"
+aws deploy create-deployment-group \
+  --application-name "${APPLICATION_NAME}" \
+  --deployment-group-name "${DEPLOYMENT_GROUP_NAME}" \
+  --deployment-config-name CodeDeployDefault.OneAtATime \
+  --ec2-tag-filters "Key=${CODEDEPLOY_TAG_NAME},Value=${CODEDEPLOY_TAG_VALUE},Type=KEY_AND_VALUE" \
+  --service-role-arn "$(security_group_arn)"
 
-# Set up CloudDeploy deployment configuration
-aws deploy create-deployment-group --application-name $APPLICATION_NAME --deployment-group-name $DEPLOYMENT_GROUP_NAME --deployment-config-name CodeDeployDefault.OneAtATime --ec2-tag-filters Key=$CODEDEPLOY_TAG_NAME,Value=$CODEDEPLOY_TAG_VALUE,Type=KEY_AND_VALUE --service-role-arn "$(security_group_arn)"
-
-# Deploy through CloudDeploy integration
-codeship_aws codedeploy_deploy /deploy/test/code_deploy/app $APPLICATION_NAME $DEPLOYMENT_GROUP_NAME codeship-codedeploy-bucket
-
-# Removing Deployment Group and Application
-aws deploy delete-deployment-group --application-name $APPLICATION_NAME --deployment-group-name $DEPLOYMENT_GROUP_NAME
-aws deploy delete-application --application-name $APPLICATION_NAME
-
-aws cloudformation delete-stack --stack-name $STACK_NAME
+info "Run integreated CodeDeploy deployment"
+codeship_aws codedeploy_deploy \
+  /deploy/test/code_deploy/app \
+  "${APPLICATION_NAME}" \
+  "${DEPLOYMENT_GROUP_NAME}" \
+  "${S3_BUCKET}"
