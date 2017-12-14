@@ -6,6 +6,13 @@ RUN \
     bash \
     curl \
     jq \
-    zip
+    zip \
+    sudo
+
+# https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl
+ARG KUBECTL_VERSION="v1.8.5"
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl
+RUN chmod +x ./kubectl
+RUN sudo mv ./kubectl /usr/local/bin/kubectl
 
 COPY scripts/ /usr/bin/
