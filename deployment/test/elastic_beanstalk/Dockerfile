@@ -1,11 +1,13 @@
-FROM ubuntu:12.04
-
-RUN apt-get update
-RUN apt-get install -y nginx
-
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf
-COPY index.html /usr/share/nginx/www/
+# use Ubuntu Xenial, the latest LTS release
+FROM ubuntu:16.04
 
 EXPOSE 80
+
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		nginx \
+	&& echo "daemon off;" >> /etc/nginx/nginx.conf
+
+COPY index.html /var/www/html/
 
 CMD ["/usr/sbin/nginx", "-c", "/etc/nginx/nginx.conf"]
