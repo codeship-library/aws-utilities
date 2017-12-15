@@ -62,7 +62,6 @@ codeship_aws eb_deploy \
   "${ENVIRONMENT_NAME}" \
   "${S3_BUCKET}"
 
-sleep 10
 info "Checking Environment if deployment matches ci commit hash"
 deployed_commit_id=`curl -s $(environment_cname)`
 

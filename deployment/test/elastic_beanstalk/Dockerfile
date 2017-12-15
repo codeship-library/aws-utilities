@@ -8,7 +8,6 @@ RUN apt-get update \
 		nginx \
 	&& echo "daemon off;" >> /etc/nginx/nginx.conf
 
-COPY index.html /usr/share/nginx/www/
+COPY index.html /var/www/html/
 
-ENTRYPOINT ["/usr/sbin/nginx"]
-CMD ["-c", "/etc/nginx/nginx.conf"]
+CMD ["/usr/sbin/nginx", "-c", "/etc/nginx/nginx.conf"]
