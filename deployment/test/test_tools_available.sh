@@ -10,3 +10,6 @@ zip -r /deploy/tmp/upload_to_s3.zip /deploy/test/upload_to_s3
 
 # Test that JQ is available and works
 echo "{\"test\": \"result\"}" | jq ".test" | grep "result"
+
+# Test that kubectl is available
+kubectl version
