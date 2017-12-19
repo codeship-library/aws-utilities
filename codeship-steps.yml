@@ -10,6 +10,8 @@
       steps:
         - name: Check for tooling
           command: /deploy/test/test_tools_available.sh
+        - name: Check for kubectl tool
+          command: kubectl version --client
         - name: Tests
           type: parallel
           steps:
