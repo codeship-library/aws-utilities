@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -e
+
+if [ "" != "${VIRTUAL_ENV}" ]; then
+  OLD_VIRTUAL_ENV=${VIRTUAL_ENV}
+  #deactivate old virtualenv if possible
+  if [ "$(type -t deactivate)" == "function" ]; then
+    deactivate
+  fi
+fi
+
+# shellcheck disable=SC1091
+source "{{ codeship_venv }}/bin/activate"
+aws "$@"
+deactivate
+
+#workaround to make sure aws is executable _after_ an AWS deployment
+#TODO: communicate to customers, that global awscli usage after deployment will be deprecated and remove this
+if [ ! -x "$(command -v aws)" ]; then
+  echo "Linking aws command for global usage."
+  ln -s {{ codeship_venv }}/bin/aws {{ aws_home }}/bin/aws
+fi
+
+if [ "" != "${OLD_VIRTUAL_ENV}" ]; then
+# shellcheck disable=SC1090
+  source "${OLD_VIRTUAL_ENV}/bin/activate"
+fi

@@ -1,0 +1,40 @@
+# Mothership calls a local awscli inside a checkbot container for AWS deployment tasks.
+# We preconfigure a virtualenv with awscli to avoid remove upstream dependencies.
+
+- stat:
+    path: "{{ codeship_venv }}"
+  register: directory
+
+- name: install virtualenv
+  pip:
+    name: virtualenv
+    state: present
+  when: directory.stat.exists == False
+
+- name: create virtualenv
+  shell: "virtualenv {{ codeship_venv }}"
+  become: True
+  become_user: root
+  when: directory.stat.exists == False
+
+- name: install awscli into virtualenv
+  pip:
+    name: awscli
+    virtualenv: "{{ codeship_venv }}"
+  become: True
+  become_user: root
+  when: directory.stat.exists == False
+
+- name: uninstall virtualenv
+  pip:
+    name: virtualenv
+    state: absent
+  when: directory.stat.exists == False
+
+- name: set up wrapper for aws tool
+  template:
+    src: ../templates/codeship_aws.j2
+    dest: "{{ aws_home }}/bin/codeship_aws"
+    owner: root
+    group: root
+    mode: 0755
