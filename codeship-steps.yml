@@ -1,6 +1,12 @@
 - name: Build Base Image
   service: base
   command: true
+- name: Test aws deployments
+  type: parallel
+  steps:
+    - name: Code Deploy Deployment Check
+      service: deployment_ansible
+      command: bundle exec rspec /deploy/test/aws_code_deploy_deployment_check_spec.rb
 - name: Test
   type: parallel
   steps:
@@ -25,8 +31,6 @@
             command: /deploy/test/elastic_beanstalk/integration-test
           - name: Code Deploy
             command: /deploy/test/code_deploy/integration-test
-          - name: Code Deploy Deployment Check
-            command: bundle exec rspec /deploy/test/aws_code_deploy_deployment_check_spec.rb
     - name: Test dockercfg Generator
       service: dockercfg_test
       type: push
