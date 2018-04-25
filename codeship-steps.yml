@@ -5,8 +5,10 @@
   type: parallel
   steps:
     - name: Elastic Beanstalk Ansible
+      service: deployment_ansible
       command: /deploy/test/elastic_beanstalk/integration-test
     - name: Code Deploy Ansible
+      service: deployment_ansible
       command: /deploy/test/code_deploy/integration-test
 - name: Test
   type: parallel
