@@ -4,9 +4,10 @@
 - name: Test aws deployments
   type: parallel
   steps:
-    - name: Code Deploy Deployment Check
-      service: deployment_ansible
-      command: bundle exec rspec /deploy/test/aws_code_deploy_deployment_check_spec.rb
+    - name: Elastic Beanstalk Ansible
+      command: /deploy/test/elastic_beanstalk/integration-test
+    - name: Code Deploy Ansible
+      command: /deploy/test/code_deploy/integration-test
 - name: Test
   type: parallel
   steps:
