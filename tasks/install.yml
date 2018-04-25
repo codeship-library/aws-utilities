@@ -14,7 +14,7 @@
 - name: create virtualenv
   shell: "virtualenv {{ codeship_venv }}"
   become: True
-  become_user: root
+  become_user: "{{ aws_user }}"
   when: directory.stat.exists == False
 
 - name: install awscli into virtualenv
@@ -22,7 +22,7 @@
     name: awscli
     virtualenv: "{{ codeship_venv }}"
   become: True
-  become_user: root
+  become_user: "{{ aws_user }}"
   when: directory.stat.exists == False
 
 - name: uninstall virtualenv
@@ -31,10 +31,16 @@
     state: absent
   when: directory.stat.exists == False
 
-- name: set up wrapper for aws tool
-  template:
-    src: ../templates/codeship_aws.j2
-    dest: "{{ aws_home }}/bin/codeship_aws"
-    owner: root
-    group: root
-    mode: 0755
+- name: move scripts into the container
+  synchronize:
+    src: "{{ role_path }}/deployment/scripts/"
+    dest: "{{ aws_home }}/bin/"
+    use_ssh_args: True
+  become: True
+  become_user: "{{ aws_user }}"
+
+- name: fix file permissions
+  file:
+    dest: "{{ aws_home }}/bin/"
+    owner: "{{ aws_user }}"
+    recurse: yes

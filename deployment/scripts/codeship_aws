@@ -7,15 +7,34 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 : ${AWS_ACCESS_KEY_ID:?'Set the AWS_ACCESS_KEY_ID environment variable'}
 : ${AWS_SECRET_ACCESS_KEY:?'Set the AWS_SECRET_ACCESS_KEY environment variable'}
 : ${AWS_DEFAULT_REGION:?'Set the AWS_DEFAULT_REGION environment variable'}
+${CODESHIP_VIRTUALENV:-""}
 
 SCRIPT_NAME=${1:?'You need to provide the action as the first parameter'}
 
 SCRIPT_PATH=$DIR/codeship_aws_$SCRIPT_NAME
 
-if [ -x $SCRIPT_PATH ]
-then
+if [ -x $SCRIPT_PATH ]; then
   $SCRIPT_PATH "${@:2}"
 else
-  echo "ACTION ${SCRIPT_NAME} is currently not supported"
-  exit 1
+  if [ "${CODESHIP_VIRTUALENV}" != "" ]; then
+    #deactivate old virtualenv if one was activated and store in variable
+    if [ "" != "${VIRTUAL_ENV}" ]; then
+      OLD_VIRTUAL_ENV=${VIRTUAL_ENV}
+      if [ "$(type -t deactivate)" == "function" ]; then
+        deactivate
+      fi
+    fi
+    source "${CODESHIP_VIRTUALENV}/bin/activate"
+  fi
+  aws "$@"
+  deactivate
+  if [ ! -x "$(command -v aws)" ]; then
+    echo "Linking aws command for global usage."
+    ln -s "${CODESHIP_VIRTUALENV}/bin/aws" "${HOME}/bin/aws"
+  fi
+
+  if [ "" != "${OLD_VIRTUAL_ENV}" ]; then
+  # shellcheck disable=SC1090
+    source "${OLD_VIRTUAL_ENV}/bin/activate"
+  fi
 fi
