@@ -11,12 +11,11 @@ DEPLOYMENT_CONFIG_NAME=$5
 
 echo "Starting CodeDeploy deployment to $APPLICATION_NAME:$DEPLOYMENT_GROUP_NAME"
 
-VERSION_NAME=${CI_COMMIT_ID}-${CI_BUILD_ID}-`date +%Y-%m-%d.%H:%M:%S`
+VERSION_NAME=${CI_COMMIT_ID}-${CI_BUILD_ID}-$(date +%Y-%m-%d.%H:%M:%S)
 FILE_NAME=$VERSION_NAME.zip
-DEPLOYMENT_FILE_NAME=/tmp/$FILE_NAME
 S3_PATH=s3://$S3_BUCKET/$FILE_NAME
 
-aws deploy push --application-name $APPLICATION_NAME --description $COMMIT_MESSAGE --ignore-hidden-files --s3-location $S3_PATH --source $APPLICATION_FOLDER > /dev/null
+aws deploy push --application-name "$APPLICATION_NAME" --description "$COMMIT_MESSAGE" --ignore-hidden-files --s3-location "$S3_PATH" --source "$APPLICATION_FOLDER" > /dev/null
 
 echo "Creating new Deployment: $VERSION_NAME"
 
@@ -26,7 +25,7 @@ if [ ! -z "$DEPLOYMENT_CONFIG_NAME" ]; then
   deployment="$deployment --deployment-config-name $DEPLOYMENT_CONFIG_NAME"
 fi
 
-deployment_id=`$deployment | jq -r .deploymentId`
+deployment_id=$($deployment | jq -r .deploymentId)
 
 echo "Validating deployment: $deployment_id"
 codeship_aws codedeploy_deploy_validation "$deployment_id"

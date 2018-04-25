@@ -3,16 +3,14 @@
 set -e
 set -o pipefail
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 DEPLOYMENT_ID=${1:?'You need to provide the Deployment Id that should be validated'}
 
 function get_deployment(){
-  aws deploy get-deployment --deployment-id $DEPLOYMENT_ID
+  aws deploy get-deployment --deployment-id "$DEPLOYMENT_ID"
 }
 
 function environment_status(){
-  echo "$(get_deployment)" | jq -r .deploymentInfo.status
+  get_deployment | jq -r .deploymentInfo.status
 }
 
 echo "Waiting for Deployment to finish"
