@@ -19,7 +19,7 @@ aws deploy push --application-name "$APPLICATION_NAME" --description "$CI_COMMIT
 
 echo "Creating new Deployment: $VERSION_NAME"
 
-deployment="aws deploy create-deployment --application-name $APPLICATION_NAME --deployment-group-name $DEPLOYMENT_GROUP_NAME --description '$CI_COMMIT_MESSAGE' --s3-location bucket=$S3_BUCKET,key=$FILE_NAME,bundleType=zip"
+deployment="aws deploy create-deployment --application-name $APPLICATION_NAME --deployment-group-name $DEPLOYMENT_GROUP_NAME --description \"$CI_COMMIT_MESSAGE\" --s3-location bucket=$S3_BUCKET,key=$FILE_NAME,bundleType=zip"
 
 if [ ! -z "$DEPLOYMENT_CONFIG_NAME" ]; then
   deployment="$deployment --deployment-config-name $DEPLOYMENT_CONFIG_NAME"
