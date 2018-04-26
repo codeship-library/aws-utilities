@@ -20,7 +20,7 @@ echo "application folder $APPLICATION_FOLDER"
 echo "application name $APPLICATION_NAME"
 echo "deployment group name $DEPLOYMENT_GROUP_NAME"
 echo "S3 bucket $S3_BUCKET"
-echo "deployment config name (optional) $DEPLOYMENT_CONFIG_NAMED"
+echo "deployment config name (optional) $DEPLOYMENT_CONFIG_NAME"
 
 echo "ci commit id $CI_COMMIT_ID"
 echo "commit message $COMMIT_MESSAGE"
@@ -28,11 +28,11 @@ echo "ci commit message $CI_COMMIT_MESSAGE"
 echo "ci build id $CI_BUILD_ID"
 echo "version name $VERSION_NAME"
 
-aws deploy push --application-name "$APPLICATION_NAME" --description "$COMMIT_MESSAGE" --ignore-hidden-files --s3-location "$S3_PATH" --source "$APPLICATION_FOLDER" > /dev/null
+aws deploy push --application-name "$APPLICATION_NAME" --description "$CI_COMMIT_MESSAGE" --ignore-hidden-files --s3-location "$S3_PATH" --source "$APPLICATION_FOLDER" > /dev/null
 
 echo "Creating new Deployment: $VERSION_NAME"
 
-deployment="aws deploy create-deployment --application-name $APPLICATION_NAME --deployment-group-name $DEPLOYMENT_GROUP_NAME --description $COMMIT_MESSAGE --s3-location bucket=$S3_BUCKET,key=$FILE_NAME,bundleType=zip"
+deployment="aws deploy create-deployment --application-name $APPLICATION_NAME --deployment-group-name $DEPLOYMENT_GROUP_NAME --description $CI_COMMIT_MESSAGE --s3-location bucket=$S3_BUCKET,key=$FILE_NAME,bundleType=zip"
 
 echo "deployment! $deployment"
 
