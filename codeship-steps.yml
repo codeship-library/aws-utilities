@@ -1,18 +1,18 @@
 - name: Build Base Image
   service: base
   command: true
-- name: Test aws deployments
-  type: parallel
-  steps:
-    - name: Elastic Beanstalk Ansible
-      service: deployment_ansible
-      command: /deploy/test/elastic_beanstalk/integration-test
-    - name: Code Deploy Ansible
-      service: deployment_ansible
-      command: /deploy/test/code_deploy/integration-test
 - name: Test
   type: parallel
   steps:
+    - name: Test Deployment Ansible
+      type: parallel
+      steps:
+        - name: Elastic Beanstalk Ansible
+          service: deployment_ansible
+          command: /deploy/test/elastic_beanstalk/integration-test
+        - name: Code Deploy Ansible
+          service: deployment_ansible
+          command: /deploy/test/code_deploy/integration-test
     - name: Test Deployment
       type: serial
       service: deployment
