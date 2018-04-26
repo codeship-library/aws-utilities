@@ -5,6 +5,8 @@ base:
     dockerfile_path: Dockerfile
 deployment_ansible:
   build:
+    image: codeship/aws-ansible-deployment
+    path: ./deployment
     dockerfile: Dockerfile.ansible
   encrypted_env_file: aws.env.encrypted
   volumes:
