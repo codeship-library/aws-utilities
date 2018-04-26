@@ -23,6 +23,7 @@ echo "S3 bucket $S3_BUCKET"
 echo "deployment config name (optional) $DEPLOYMENT_CONFIG_NAMED"
 
 echo "ci commit id $CI_COMMIT_ID"
+echo "commit message $COMMIT_MESSAGE"
 echo "ci commit message $CI_COMMIT_MESSAGE"
 echo "ci build id $CI_BUILD_ID"
 echo "version name $VERSION_NAME"
