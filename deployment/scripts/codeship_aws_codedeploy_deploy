@@ -19,15 +19,15 @@ aws deploy push --application-name "$APPLICATION_NAME" --description "$CI_COMMIT
 
 echo "Creating new Deployment: $VERSION_NAME"
 
-deployment="aws deploy create-deployment --application-name $APPLICATION_NAME --deployment-group-name $DEPLOYMENT_GROUP_NAME --description \"$CI_COMMIT_MESSAGE\" --s3-location bucket=$S3_BUCKET,key=$FILE_NAME,bundleType=zip"
+deployment=("--application-name" "$APPLICATION_NAME" "--deployment-group-name" "$DEPLOYMENT_GROUP_NAME" "--description" "$CI_COMMIT_MESSAGE" "--s3-location" "bucket=$S3_BUCKET,key=$FILE_NAME,bundleType=zip")
 
 if [ ! -z "$DEPLOYMENT_CONFIG_NAME" ]; then
-  deployment="$deployment --deployment-config-name $DEPLOYMENT_CONFIG_NAME"
+  deployment+=("--deployment-config-name" "$DEPLOYMENT_CONFIG_NAME")
 fi
 
-echo "Deployment Command: $deployment"
+echo "Deployment Command: ${deployment[@]}"
 
-deployment_id=$($deployment | jq -r .deploymentId)
+deployment_id=$(aws deploy create-deployment "${deployment[@]}" | jq -r .deploymentId)
 
 echo "Validating deployment: $deployment_id"
 codeship_aws codedeploy_deploy_validation "$deployment_id"
