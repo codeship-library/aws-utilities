@@ -8,11 +8,11 @@
       type: parallel
       service: deployment_ansible
       steps:
-        - name: S3, LS
+        - name: S3, LS Ansible
           command: aws s3 ls s3://codeship_aws_deployment_integration_test
-        - name: S3, CP Archive
+        - name: S3, CP Archive Ansible
           command: aws s3 cp /deploy/tmp/upload_to_s3.zip s3://codeship_aws_deployment_integration_test
-        - name: S3, CP
+        - name: S3, CP Ansible
           command: aws s3 cp /deploy/test/upload_to_s3 s3://codeship_aws_deployment_integration_test
         - name: Elastic Beanstalk Ansible
           command: /deploy/test/elastic_beanstalk/integration-test
