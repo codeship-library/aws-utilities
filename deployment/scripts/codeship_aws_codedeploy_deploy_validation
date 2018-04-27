@@ -13,16 +13,20 @@ function environment_status(){
   get_deployment | jq -r .deploymentInfo.status
 }
 
+function environment_output(){
+  get_deployment | jq -r .deploymentInfo
+}
+
 echo "Waiting for Deployment to finish"
 until [[ "$(environment_status)" =~ (Succeeded|Failed|Stopped) ]] ; do
-  echo "Environment Status: $(environment_status)"
+  echo "Environment Output: $(environment_output)"
   sleep 10
   echo "."
 done
 
 echo "Deployment process finished, checking success of deployment"
 
-echo "Environment Status: $(environment_status)"
+echo "Environment Output: $(environment_output)"
 
 if [ "$(environment_status)" == "Succeeded" ]
 then
