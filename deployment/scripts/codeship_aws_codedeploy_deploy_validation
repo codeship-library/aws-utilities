@@ -15,11 +15,14 @@ function environment_status(){
 
 echo "Waiting for Deployment to finish"
 until [[ "$(environment_status)" =~ (Succeeded|Failed|Stopped) ]] ; do
+  echo "Environment Status: $(environment_status)"
   sleep 10
   echo "."
 done
 
 echo "Deployment process finished, checking success of deployment"
+
+echo "Environment Status: $(environment_status)"
 
 if [ "$(environment_status)" == "Succeeded" ]
 then
