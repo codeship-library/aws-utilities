@@ -6,6 +6,7 @@
   steps:
     - name: Test Deployment Ansible
       type: parallel
+      service: deployment_ansible
       steps:
         - name: S3, LS
           command: aws s3 ls s3://codeship_aws_deployment_integration_test
@@ -14,10 +15,8 @@
         - name: S3, CP
           command: aws s3 cp /deploy/test/upload_to_s3 s3://codeship_aws_deployment_integration_test
         - name: Elastic Beanstalk Ansible
-          service: deployment_ansible
           command: /deploy/test/elastic_beanstalk/integration-test
         - name: Code Deploy Ansible
-          service: deployment_ansible
           command: /deploy/test/code_deploy/integration-test
     - name: Test Deployment
       type: serial
