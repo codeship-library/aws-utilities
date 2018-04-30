@@ -69,7 +69,7 @@ info "Create CodeDeploy deployment group called ${DEPLOYMENT_GROUP_NAME}"
 aws deploy create-deployment-group \
   --application-name "${APPLICATION_NAME}" \
   --deployment-group-name "${DEPLOYMENT_GROUP_NAME}" \
-  --deployment-config-name CodeDeployDefault.AllAtOnce \
+  --deployment-config-name CodeDeployDefault.HalfAtATime \
   --ec2-tag-filters "Key=${CODEDEPLOY_TAG_NAME},Value=${CODEDEPLOY_TAG_VALUE},Type=KEY_AND_VALUE" \
   --service-role-arn "$(security_group_arn)"
 
