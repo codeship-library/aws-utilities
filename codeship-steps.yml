@@ -5,7 +5,7 @@
   type: parallel
   service: deployment_ansible
   steps:
-    - name: Check for tooling
+    - name: Check for tooling Ansible
       command: /deploy/test/test_tools_available.sh
     - name: S3, LS Ansible
       command: aws s3 ls s3://codeship_aws_deployment_integration_test
