@@ -11,9 +11,9 @@ S3_BUCKET=${4:?'You need to provide the S3 Bucket to upload the artefact to'}
 echo "Starting ElasticBeanstalk deployment to $APPLICATION_NAME:$ENVIRONMENT_NAME"
 
 echo "CHANGING Directory to $APPLICATION_FOLDER"
-cd $APPLICATION_FOLDER
+cd "$APPLICATION_FOLDER"
 
-VERSION_NAME=${CI_COMMIT_ID}-${CI_BUILD_ID}-`date +%Y-%m-%d.%H:%M:%S`
+VERSION_NAME=${CI_COMMIT_ID}-${CI_BUILD_ID}-$(date +%Y-%m-%d.%H:%M:%S)
 FILE_NAME=$VERSION_NAME.zip
 DEPLOYMENT_FILE_NAME=/tmp/$FILE_NAME
 

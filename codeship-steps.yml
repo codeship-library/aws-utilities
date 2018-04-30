@@ -1,6 +1,25 @@
 - name: Build Base Image
   service: base
   command: true
+- name: Test Deployment Ansible
+  type: serial
+  service: deployment_ansible
+  steps:
+    - name: Check for tooling Ansible
+      command: /deploy/test/test_tools_available.sh
+    - name: Tests Ansible
+      type: parallel
+      steps:
+        - name: S3, LS Ansible
+          command: aws s3 ls s3://codeship_aws_deployment_integration_test
+        - name: S3, CP Archive Ansible
+          command: aws s3 cp /deploy/tmp/upload_to_s3.zip s3://codeship_aws_deployment_integration_test
+        - name: S3, CP Ansible
+          command: aws s3 cp /deploy/test/upload_to_s3 s3://codeship_aws_deployment_integration_test
+        - name: Elastic Beanstalk Ansible
+          command: /deploy/test/elastic_beanstalk/integration-test
+        - name: Code Deploy Ansible
+          command: /deploy/test/code_deploy/integration-test
 - name: Test
   type: parallel
   steps:
