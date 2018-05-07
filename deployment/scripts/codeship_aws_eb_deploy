@@ -24,7 +24,7 @@ echo "Uploading to S3 for deployment"
 aws s3 cp "$DEPLOYMENT_FILE_NAME" "s3://$S3_BUCKET"
 
 echo "Creating ElasticBeanstalk version: $VERSION_NAME"
-aws elasticbeanstalk create-application-version --application-name "$APPLICATION_NAME" --description "${CI_MESSAGE:0:200}" --version-label "$VERSION_NAME" --source-bundle "S3Bucket=$S3_BUCKET,S3Key=$FILE_NAME"
+aws elasticbeanstalk create-application-version --application-name "$APPLICATION_NAME" --description "${CI_COMMIT_MESSAGE:0:200}" --version-label "$VERSION_NAME" --source-bundle "S3Bucket=$S3_BUCKET,S3Key=$FILE_NAME"
 
 echo "Updating ElasticBeanstalk environment"
 aws elasticbeanstalk update-environment --environment-name "$ENVIRONMENT_NAME" --version-label "$VERSION_NAME"
