@@ -24,7 +24,7 @@ trap cleanup EXIT
 
 APPLICATION_NAME="aws-utilities-eb-$(date +%s)"
 ENVIRONMENT_NAME="env-$(date +%s)"
-S3_BUCKET="elasticbeanstalkcodeupload"
+S3_BUCKET="elasticbeanstalkcodeupload/subdir"
 
 set -eo pipefail
 
