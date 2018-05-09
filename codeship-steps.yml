@@ -10,6 +10,8 @@
     - name: Tests Ansible
       type: parallel
       steps:
+        - name: Util Scripts Ansible
+          command: /deploy/test/utils
         - name: S3, LS Ansible
           command: aws s3 ls s3://codeship_aws_deployment_integration_test
         - name: S3, CP Archive Ansible
