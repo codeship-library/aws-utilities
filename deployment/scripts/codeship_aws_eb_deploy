@@ -19,24 +19,22 @@ cd "$APPLICATION_FOLDER"
 
 VERSION_NAME=${CI_COMMIT_ID}-${CI_BUILD_ID}-$(date +%Y-%m-%d.%H:%M:%S)
 FILE_NAME=$VERSION_NAME.zip
-#DEPLOYMENT_FILE_NAME=/tmp/$FILE_NAME
-
-#echo "Creating Zip file to deploy in $DEPLOYMENT_FILE_NAME"
-#zip -x */.git* -x .git* -x *.hg* -r "$DEPLOYMENT_FILE_NAME" ./
-
-echo "Uploading to S3 for deployment"
-
-#aws s3 cp "$DEPLOYMENT_FILE_NAME" "s3://$S3_BUCKET/$S3_BUCKET_SUBFOLDER_PATH"
+DEPLOYMENT_FILE_NAME=/tmp/$FILE_NAME
 
 if [[ -z $S3_BUCKET_SUBFOLDER_PATH ]]; then
   S3_KEY=$FILE_NAME
-  S3_PATH=s3://$S3_BUCKET/$FILE_NAME
+  S3_PATH="s3://$S3_BUCKET/$FILE_NAME"
 else
   S3_KEY="$S3_BUCKET_SUBFOLDER_PATH/$FILE_NAME"
-  S3_PATH=s3://$S3_BUCKET/$S3_BUCKET_SUBFOLDER_PATH/$FILE_NAME
+  S3_PATH="s3://$S3_BUCKET/$S3_BUCKET_SUBFOLDER_PATH/$FILE_NAME"
 fi
 
-aws deploy push --application-name "$APPLICATION_NAME" --description "$CI_COMMIT_MESSAGE" --ignore-hidden-files --s3-location "$S3_PATH" --source "$APPLICATION_FOLDER" > /dev/nul
+echo "Creating Zip file to deploy in $DEPLOYMENT_FILE_NAME"
+zip -x */.git* -x .git* -x *.hg* -r "$DEPLOYMENT_FILE_NAME" ./
+
+echo "Uploading to S3 for deployment"
+
+aws s3 cp "$DEPLOYMENT_FILE_NAME" "$S3_PATH"
 
 echo "Creating ElasticBeanstalk version: $VERSION_NAME"
 
