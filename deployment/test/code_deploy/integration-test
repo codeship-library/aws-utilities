@@ -37,7 +37,7 @@ CODEDEPLOY_TAG_NAME='CodeDeployIntegrationTestTag'
 CODEDEPLOY_TAG_VALUE='CodeDeployIntegrationTestTagValue'
 APPLICATION_NAME="aws-utilities-cd-${CODEDEPLOY_UNIX_TIME}"
 DEPLOYMENT_GROUP_NAME="deployment-${CODEDEPLOY_UNIX_TIME}"
-S3_BUCKET="codeship-codedeploy-bucket/subdir"
+S3_BUCKET="codeship-codedeploy-bucket"
 
 set -eo pipefail
 
