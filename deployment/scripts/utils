@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+function remove_trailing_slashes() {
+  s3_bucket=$1
+
+  if [[ ${s3_bucket:0:1} == "/" ]]; then
+    s3_bucket="${s3_bucket:1}"
+  elif [[ ${s3_bucket: -1} == "/" ]]; then
+    echo "hey"
+    s3_bucket="${s3_bucket:0:-1}"
+  fi
+
+  echo $s3_bucket
+}
+
+function s3_bucket_name() {
+  s3_bucket="$(remove_trailing_slashes "$1")"
+
+  echo ${s3_bucket%%/*}
+}
+
+function s3_bucket_subfolder_path() {
+  s3_bucket="$(remove_trailing_slashes "$1")"
+
+  if [[ $s3_bucket =~ / ]]; then
+    echo ${s3_bucket#*/}
+  else
+    echo ""
+  fi
+}

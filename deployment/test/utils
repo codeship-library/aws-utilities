@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+source "$(dirname "$0")/../scripts/utils"
+
+echo "Testing for s3_bucket"
+test $(s3_bucket_name "s3_bucket") == "s3_bucket"
+test -z $(s3_bucket_subfolder_path "s3_bucket")
+
+echo "Testing for /s3_bucket"
+test $(s3_bucket_name "/s3_bucket") == "s3_bucket"
+test -z $(s3_bucket_subfolder_path "/s3_bucket")
+
+
+echo "Testing for s3_bucket/subdir"
+test $(s3_bucket_name "s3_bucket/subdir") == "s3_bucket"
+test $(s3_bucket_subfolder_path "s3_bucket/subdir") == "subdir"
+
+echo "Testing for /s3_bucket/subdir"
+test $(s3_bucket_name "/s3_bucket/subdir") == "s3_bucket"
+test $(s3_bucket_subfolder_path "/s3_bucket/subdir") == "subdir"
+
+echo "Testing for s3_bucket/subdir/another"
+test $(s3_bucket_name "s3_bucket/subdir/another") == "s3_bucket"
+test $(s3_bucket_subfolder_path "s3_bucket/subdir/another") == "subdir/another"
+
+echo "Testing for /s3_bucket/subdir/another"
+test $(s3_bucket_name "/s3_bucket/subdir/another") == "s3_bucket"
+test $(s3_bucket_subfolder_path "/s3_bucket/subdir/another") == "subdir/another"
+
+echo "done."
