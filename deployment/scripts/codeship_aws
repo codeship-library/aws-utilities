@@ -23,7 +23,9 @@ if [ -x $SCRIPT_PATH ]; then
     fi
     source "${CODESHIP_VIRTUALENV}/bin/activate"
   fi
-  aws "$@"
+
+  $SCRIPT_PATH "${@:2}"
+
   deactivate
   if [ ! -x "$(command -v aws)" ]; then
     echo "Linking aws command for global usage."
@@ -34,8 +36,6 @@ if [ -x $SCRIPT_PATH ]; then
     # shellcheck disable=SC1090
     source "${OLD_VIRTUAL_ENV}/bin/activate"
   fi
-
-  $SCRIPT_PATH "${@:2}"
 else
   if [ ! -z "${CODESHIP_VIRTUALENV}" ]; then
     #deactivate old virtualenv if one was activated and store in variable
