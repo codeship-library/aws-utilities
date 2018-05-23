@@ -13,7 +13,29 @@ SCRIPT_NAME=${1:?'You need to provide the action as the first parameter'}
 SCRIPT_PATH=$DIR/codeship_aws_$SCRIPT_NAME
 
 if [ -x $SCRIPT_PATH ]; then
+  if [ ! -z "${CODESHIP_VIRTUALENV}" ]; then
+    #deactivate old virtualenv if one was activated and store in variable
+    if [ "" != "${VIRTUAL_ENV}" ]; then
+      OLD_VIRTUAL_ENV=${VIRTUAL_ENV}
+      if [ "$(type -t deactivate)" == "function" ]; then
+        deactivate
+      fi
+    fi
+    source "${CODESHIP_VIRTUALENV}/bin/activate"
+  fi
+
   $SCRIPT_PATH "${@:2}"
+
+  deactivate
+  if [ ! -x "$(command -v aws)" ]; then
+    echo "Linking aws command for global usage."
+    ln -s "${CODESHIP_VIRTUALENV}/bin/aws" "${HOME}/bin/aws"
+  fi
+
+  if [ "" != "${OLD_VIRTUAL_ENV}" ]; then
+    # shellcheck disable=SC1090
+    source "${OLD_VIRTUAL_ENV}/bin/activate"
+  fi
 else
   if [ ! -z "${CODESHIP_VIRTUALENV}" ]; then
     #deactivate old virtualenv if one was activated and store in variable
