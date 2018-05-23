@@ -20,7 +20,7 @@ RUN curl -L "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL
 
 RUN virtualenv root/.codeship-venv
 
-ENV CODESHIP_VIRTUALENV="root/.codeship-venv"
+ENV CODESHIP_VIRTUALENV="/root/.codeship-venv"
 
 COPY scripts/ /usr/bin/
 
