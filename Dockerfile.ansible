@@ -15,4 +15,4 @@ COPY deployment /aws/deployment
 RUN ansible-playbook -i localhost -c local site.yml
 
 ENV PATH="/root/bin:${PATH}"
-
+ENV CODESHIP_VIRTUALENV="/root/.codeship-venv"
