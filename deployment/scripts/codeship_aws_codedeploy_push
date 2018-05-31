@@ -24,4 +24,6 @@ else
   S3_PATH="s3://$S3_BUCKET/$S3_BUCKET_SUBFOLDER_PATH/$FILE_NAME"
 fi
 
-aws deploy push --application-name "$APPLICATION_NAME" --description "$CI_COMMIT_MESSAGE" --ignore-hidden-files --s3-location "$S3_PATH" --source "$APPLICATION_FOLDER"
+REVISION=$(aws deploy push --application-name "$APPLICATION_NAME" --description "$CI_COMMIT_MESSAGE" --ignore-hidden-files --s3-location "$S3_PATH" --source "$APPLICATION_FOLDER")
+
+echo "Revision uploaded key : $(echo $REVISION | awk -F 'eTag=| --deployment' '{print $2}' | tail -1), eTag : $(echo $REVISION | awk -F 'eTag=| --deployment' '{print $2}' | tail -1)"
