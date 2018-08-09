@@ -18,6 +18,9 @@ ARG KUBECTL_VERSION="v1.9.0"
 RUN curl -L "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl" > /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl
 
+RUN curl -L "https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/linux/amd64/aws-iam-authenticator" > /usr/local/bin/aws-iam-authenticator \
+    && chmod +x /usr/local/bin/aws-iam-authenticator
+
 RUN virtualenv root/.codeship-venv
 
 ENV CODESHIP_VIRTUALENV="/root/.codeship-venv"
