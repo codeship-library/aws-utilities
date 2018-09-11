@@ -4,4 +4,5 @@
   - role: aws
     aws_user: root
     aws_home: /root
+    codeship_python: /usr/bin/python
     codeship_venv: "{{ aws_home }}/.codeship-venv"
