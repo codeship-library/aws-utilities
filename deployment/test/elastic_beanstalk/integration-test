@@ -20,7 +20,7 @@ function cleanup() {
     --terminate-env-by-force \
     --application-name ${APPLICATION_NAME}
 }
-trap cleanup EXIT
+trap cleanup EXIT SIGINT SIGTERM
 
 APPLICATION_NAME="aws-utilities-eb-$(date +%s)"
 ENVIRONMENT_NAME="env-$(date +%s)"
