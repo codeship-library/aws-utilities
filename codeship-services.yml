@@ -3,7 +3,7 @@ base:
     image: codeship/aws-base
     path: ./base
     dockerfile_path: Dockerfile
-deployment_ansible:
+deployment-ansible:
   build:
     dockerfile: Dockerfile.ansible
   encrypted_env_file: aws.env.encrypted
@@ -17,17 +17,17 @@ deployment:
   encrypted_env_file: aws.env.encrypted
   volumes:
     - ./deployment:/deploy
-dockercfg_generator:
+dockercfg-generator:
   build:
     image: codeship/aws-ecr-dockercfg-generator
     path: ./dockercfg-generator
     dockerfile_path: Dockerfile
-dockercfg_test:
+dockercfg-test:
   build:
     image: 870119404647.dkr.ecr.us-east-1.amazonaws.com/codeship-testing
     path: ./dockercfg-generator
     dockerfile_path: Dockerfile.test
-dockercfg_test_generator:
+dockercfg-test-generator:
   image: codeship/aws-ecr-dockercfg-generator
   add_docker: true
   encrypted_env_file: aws.env.encrypted

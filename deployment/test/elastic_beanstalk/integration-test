@@ -11,14 +11,12 @@ function cleanup() {
     --application-name "${APPLICATION_NAME}" \
     --environment-names "${ENVIRONMENT_NAME}"
 
-  info "Terminate Elastic Beanstalk environment called ${ENVIRONMENT_NAME}"
-  aws elasticbeanstalk terminate-environment \
-    --environment-name ${ENVIRONMENT_NAME}
-
   info "Delete Elastic Beanstalk application named ${APPLICATION_NAME}"
-  aws elasticbeanstalk delete-application \
+  until aws elasticbeanstalk delete-application \
     --terminate-env-by-force \
-    --application-name ${APPLICATION_NAME}
+    --application-name "${APPLICATION_NAME}"; do
+    echo "Unable do delete elastic beanstalk application, retrying until success."
+  done
 }
 trap cleanup EXIT SIGINT SIGTERM
 
@@ -63,7 +61,7 @@ codeship_aws eb_deploy \
   "${S3_BUCKET}"
 
 info "Checking Environment if deployment matches ci commit hash"
-deployed_commit_id=`curl -s $(environment_cname)`
+deployed_commit_id=$(curl -s "$(environment_cname)")
 
 if [ "${deployed_commit_id}" == "${CI_COMMIT_ID}" ]; then
   info "Matching commit hashes ${CI_COMMIT_ID}, deployment successful"
