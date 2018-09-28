@@ -29,7 +29,7 @@ function cleanup() {
   aws cloudformation delete-stack \
     --stack-name "${STACK_NAME}"
 }
-trap cleanup EXIT
+trap cleanup EXIT SIGINT SIGTERM
 
 CODEDEPLOY_UNIX_TIME="$(date +%s)"
 STACK_NAME="aws-utilities-stack-${CODEDEPLOY_UNIX_TIME}"

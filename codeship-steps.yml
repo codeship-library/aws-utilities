@@ -3,7 +3,7 @@
   command: true
 - name: Test Deployment Ansible
   type: serial
-  service: deployment_ansible
+  service: deployment-ansible
   steps:
     - name: Check for tooling Ansible
       command: /deploy/test/test_tools_available.sh
@@ -47,11 +47,11 @@
           - name: Code Deploy
             command: /deploy/test/code_deploy/integration-test
     - name: Test dockercfg Generator
-      service: dockercfg_test
+      service: dockercfg-test
       type: push
       image_name: 870119404647.dkr.ecr.us-east-1.amazonaws.com/codeship-testing
       registry: https://870119404647.dkr.ecr.us-east-1.amazonaws.com
-      dockercfg_service: dockercfg_test_generator
+      dockercfg_service: dockercfg-test-generator
 - name: Deploy (to Docker Hub)
   type: serial
   steps:
@@ -62,7 +62,7 @@
       image_name: codeship/aws-deployment
       encrypted_dockercfg_path: dockercfg.encrypted
     - name: Push dockercfg Generator
-      service: dockercfg_generator
+      service: dockercfg-generator
       tag: master
       type: push
       image_name: codeship/aws-ecr-dockercfg-generator
