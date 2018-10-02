@@ -5,13 +5,14 @@ RUN \
   apk --no-cache add \
     bash \
     curl \
+    groff \
     jq \
+    less \
     zip \
     python \
     python-dev \
     py-pip \
     && pip install virtualenv
-
 
 # install kubectl from AWS
 ARG KUBECTL_VERSION="1.10.3"
@@ -29,4 +30,3 @@ RUN virtualenv root/.codeship-venv
 ENV CODESHIP_VIRTUALENV="/root/.codeship-venv"
 
 COPY scripts/ /usr/bin/
-
