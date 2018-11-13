@@ -26,11 +26,13 @@ else
   S3_PATH="s3://$S3_BUCKET/$S3_BUCKET_SUBFOLDER_PATH/$FILE_NAME"
 fi
 
-aws deploy push --application-name "$APPLICATION_NAME" --description "$CI_COMMIT_MESSAGE" --ignore-hidden-files --s3-location "$S3_PATH" --source "$APPLICATION_FOLDER" > /dev/null
+DESCRIPTION="${CI_COMMIT_MESSAGE:0:512}"
+
+aws deploy push --application-name "$APPLICATION_NAME" --description "$DESCRIPTION" --ignore-hidden-files --s3-location "$S3_PATH" --source "$APPLICATION_FOLDER" > /dev/null
 
 echo "Creating new Deployment: $VERSION_NAME"
 
-deployment=("--application-name" "$APPLICATION_NAME" "--deployment-group-name" "$DEPLOYMENT_GROUP_NAME" "--description" "$CI_COMMIT_MESSAGE" "--s3-location" "bucket=$S3_BUCKET,key=$S3_KEY,bundleType=zip")
+deployment=("--application-name" "$APPLICATION_NAME" "--deployment-group-name" "$DEPLOYMENT_GROUP_NAME" "--description" "$DESCRIPTION" "--s3-location" "bucket=$S3_BUCKET,key=$S3_KEY,bundleType=zip")
 
 if [ ! -z "$DEPLOYMENT_CONFIG_NAME" ]; then
   deployment+=("--deployment-config-name" "$DEPLOYMENT_CONFIG_NAME")
