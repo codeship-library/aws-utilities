@@ -15,6 +15,7 @@ RUN \
     && pip install virtualenv
 
 # install kubectl from AWS
+# https://docs.aws.amazon.com/eks/latest/userguide/configure-kubectl.html
 ARG KUBECTL_VERSION="1.10.3"
 ARG KUBECTL_BUILD_DATE="2018-07-26"
 
