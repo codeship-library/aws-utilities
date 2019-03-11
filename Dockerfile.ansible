@@ -1,10 +1,10 @@
-FROM ubuntu:14.04
+FROM ubuntu:18.04
 
 RUN \
   apt-get update && \
-  apt-get install -y --no-install-recommends python-setuptools apt-transport-https ca-certificates wget rsync unzip jq zip curl && \
-  easy_install pip==9.0.3 && \
-  pip install ansible==2.4.0.0 pyasn1==0.3.6 ndg-httpsclient==0.4.3 urllib3==1.22 pyOpenSSL==17.3.0 awscli
+  apt-get install -y --no-install-recommends python-setuptools python-pip apt-transport-https ca-certificates wget rsync unzip jq zip curl && \
+  pip install wheel && \
+  pip install ansible==2.4.4.0 pyasn1==0.4.2 ndg-httpsclient==0.4.4 urllib3==1.22 pyOpenSSL==17.3.0 awscli
 
 RUN mkdir /root/bin
 
