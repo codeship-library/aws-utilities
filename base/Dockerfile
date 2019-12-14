@@ -10,3 +10,5 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=true
 RUN \
   pip install awscli==${AWS_CLI_VERSION} && \
   mkdir -p "${HOME}/.aws"
+
+#test
