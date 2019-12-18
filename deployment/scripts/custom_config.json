@@ -1,0 +1,10 @@
+{
+"autoRollbackConfiguration": {
+        "enabled": true, 
+        "events": [
+            "DEPLOYMENT_FAILURE"
+        ]
+    }, 
+    "updateOutdatedInstancesOnly": true, 
+    "fileExistsBehavior": "OVERWRITE"
+}
