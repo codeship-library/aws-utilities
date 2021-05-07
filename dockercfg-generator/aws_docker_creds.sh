@@ -32,11 +32,6 @@ if [[ -n $AWS_STS_ROLE || -n $AWS_STS_ACCOUNT ]]; then
   export AWS_SESSION_EXPIRATION=$(cat ${aws_tmp} | jq -r ".Credentials.Expiration")
 fi
 
-# registry_id=''
-# if [[ -n $AWS_ECR_REGISTRY_IDS ]]; then
-#   registry_ids="--registry-ids $AWS_ECR_REGISTRY_IDS"
-# fi
-
 # fetching aws docker login
 echo "Logging into AWS ECR"
 # AWS has deprecated the get-login function in favor of get-login-password
