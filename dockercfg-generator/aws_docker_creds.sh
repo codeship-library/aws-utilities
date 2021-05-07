@@ -15,6 +15,7 @@ EOF
 
 # For multi account aws setups, use primary credentials to assume the role in
 # the target account
+AWS_ACCOUNT=""
 if [[ -n $AWS_STS_ROLE || -n $AWS_STS_ACCOUNT ]]; then
   : "${AWS_STS_ROLE:?Need to set AWS_STS_ROLE}"
   : "${AWS_STS_ACCOUNT:?Need to set AWS_STS_ACCOUNT}"
@@ -30,13 +31,17 @@ if [[ -n $AWS_STS_ROLE || -n $AWS_STS_ACCOUNT ]]; then
   export AWS_SECRET_ACCESS_KEY=$(cat ${aws_tmp} | jq -r ".Credentials.SecretAccessKey")
   export AWS_SESSION_TOKEN=$(cat ${aws_tmp} | jq -r ".Credentials.SessionToken")
   export AWS_SESSION_EXPIRATION=$(cat ${aws_tmp} | jq -r ".Credentials.Expiration")
+
+  AWS_ACCOUNT=$AWS_STS_ACCOUNT
+elif
+  AWS_ACCOUNT=$(aws sts get-caller-identity | jq -r ".Account")
 fi
 
 # fetching aws docker login
-echo "Logging into AWS ECR"
+echo "Logging into AWS ECR with Account ${AWS_ACCOUNT}"
 # AWS has deprecated the get-login function in favor of get-login-password
 # https://docs.aws.amazon.com/cli/latest/reference/ecr/get-login.html
-$(aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_STS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com)
+$(aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com)
 
 # writing aws docker creds to desired path
 echo "Writing Docker creds to $1"
