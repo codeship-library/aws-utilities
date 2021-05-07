@@ -32,14 +32,16 @@ if [[ -n $AWS_STS_ROLE || -n $AWS_STS_ACCOUNT ]]; then
   export AWS_SESSION_EXPIRATION=$(cat ${aws_tmp} | jq -r ".Credentials.Expiration")
 fi
 
-registry_id=''
-if [[ -n $AWS_ECR_REGISTRY_IDS ]]; then
-  registry_ids="--registry-ids $AWS_ECR_REGISTRY_IDS"
-fi
+# registry_id=''
+# if [[ -n $AWS_ECR_REGISTRY_IDS ]]; then
+#   registry_ids="--registry-ids $AWS_ECR_REGISTRY_IDS"
+# fi
 
 # fetching aws docker login
 echo "Logging into AWS ECR"
-$(aws ecr get-login --no-include-email ${registry_ids})
+# AWS has deprecated the get-login function in favor of get-login-password
+# https://docs.aws.amazon.com/cli/latest/reference/ecr/get-login.html
+$(aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_STS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com)
 
 # writing aws docker creds to desired path
 echo "Writing Docker creds to $1"
