@@ -1,5 +1,5 @@
 # use Ubuntu Xenial, the latest LTS release
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 EXPOSE 80
 
