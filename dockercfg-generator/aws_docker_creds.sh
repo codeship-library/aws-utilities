@@ -38,10 +38,10 @@ else
 fi
 
 # fetching aws docker login
-echo "Logging into AWS ECR with Account ${AWS_ACCOUNT}"
+echo "Logging into AWS ECR
 # AWS has deprecated the get-login function in favor of get-login-password
 # https://docs.aws.amazon.com/cli/latest/reference/ecr/get-login.html
-aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com
+aws ecr get-login-password --region ${AWS_REGION}
 
 # writing aws docker creds to desired path
 echo "Writing Docker creds to $1"
