@@ -41,7 +41,7 @@ info "Create Elastic Beanstalk environment called ${ENVIRONMENT_NAME}"
 aws elasticbeanstalk create-environment \
   --application-name "${APPLICATION_NAME}" \
   --environment-name "${ENVIRONMENT_NAME}" \
-  --solution-stack-name "64bit Amazon Linux 2017.09 v2.8.0 running Docker 17.06.2-ce"
+  --solution-stack-name "64bit Amazon Linux 2018.03 v2.16.7 running Docker 19.03.13-ce"
 
 info "Waiting for environment to start"
 while [ "$(environment_status)" != "Ready" ] ; do
