@@ -1,9 +1,9 @@
-FROM python:3.7-alpine
+FROM python:3.9-alpine
 LABEL maintainer='Codeship Inc., <maintainers@codeship.com>'
 
 # which version of the AWS CLI to install.
 # https://pypi.python.org/pypi/awscli
-ARG AWS_CLI_VERSION="1.19.69"
+ARG AWS_CLI_VERSION="1.19.70"
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=true
 
