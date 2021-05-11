@@ -9,9 +9,9 @@ RUN \
     jq \
     less \
     zip \
-    python \
-    python-dev \
-    py-pip \
+    python3 \
+    python3-dev \
+    py3-pip \
     && pip install virtualenv
 
 # install kubectl from AWS

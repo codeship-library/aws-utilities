@@ -2,9 +2,10 @@ FROM ubuntu:18.04
 
 RUN \
   apt-get update && \
-  apt-get install -y --no-install-recommends python-setuptools python-pip apt-transport-https ca-certificates wget rsync unzip jq zip curl && \
-  pip install wheel && \
-  pip install ansible==2.8.20 pyasn1==0.4.8 ndg-httpsclient==0.5.1 urllib3==1.26.3 awscli
+  apt-get install -y --no-install-recommends python3-setuptools python3-pip apt-transport-https ca-certificates wget rsync unzip jq zip curl && \
+  pip3 install --upgrade pip && \
+  pip3 install wheel && \
+  pip3 install ansible==2.8.20 pyasn1==0.4.8 ndg-httpsclient==0.5.1 urllib3==1.26.3 awscli
 
 RUN mkdir /root/bin
 
