@@ -35,9 +35,6 @@ Optionally, you can also set the following variables to assume a role across acc
 * `AWS_STS_ROLE` - The AWS role to assume
 * `AWS_STS_ACCOUNT` - The AWS account the role exists in
 
-If you are using an ECR registry in another AWS account to the IAM user but you aren't using a role, a list of AWS account IDs that correspond to the registries that you want to log in to can be specified:
-* `AWS_ECR_REGISTRY_IDS` - A space separated list of AWS account IDs
-
 Here is an example of using and ECR Dockercfg generator to authenticate pushing an image.
 
 ```yaml
