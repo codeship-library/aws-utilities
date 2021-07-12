@@ -12,6 +12,10 @@ SCRIPT_NAME=${1:?'You need to provide the action as the first parameter'}
 
 SCRIPT_PATH=$DIR/codeship_aws_$SCRIPT_NAME
 
+echo "made it here"
+echo $SCRIPT_NAME
+echo $SCRIPT_PATH
+
 if [ -x $SCRIPT_PATH ]; then
   if [ ! -z "${CODESHIP_VIRTUALENV}" ]; then
     #deactivate old virtualenv if one was activated and store in variable
