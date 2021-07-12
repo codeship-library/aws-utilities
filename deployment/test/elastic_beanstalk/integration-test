@@ -55,6 +55,11 @@ mkdir -p ./tmp/deployment
 cp test/elastic_beanstalk/Dockerfile ./tmp/deployment
 echo "${CI_COMMIT_ID}" > ./tmp/deployment/index.html
 
+echo "ls"
+ls
+echo "pwd"
+pwd
+
 codeship_aws eb_deploy \
   "/deploy/tmp/deployment" \
   "${APPLICATION_NAME}" \
