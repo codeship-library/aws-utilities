@@ -37,13 +37,22 @@ else
   AWS_ACCOUNT=$(aws sts get-caller-identity | jq -r ".Account")
 fi
 
+# For public images stored in public.ecr.aws, we need to use a different CLI call
+if [[ -v ECR_PUBLIC ]]; then
+  COMMAND=ecr-public
+  SERVER=public.ecr.aws
+else
+  COMMAND=ecr
+  SERVER=${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com
+fi
+
 # fetching aws docker login
 # aws deprecated the get-login function in favor of get-login-password
 # https://docs.aws.amazon.com/cli/latest/reference/ecr/get-login.html
 echo "Logging into AWS ECR with account ${AWS_ACCOUNT}"
-aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com
+aws ${COMMAND} get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${SERVER}
 
 # writing aws docker creds to desired path
-echo "Writing Docker creds to $1"
-chmod 544 ~/.docker/config.json
-cp ~/.docker/config.json $1
+#echo "Writing Docker creds to $1"
+#chmod 544 ~/.docker/config.json
+#cp ~/.docker/config.json $1
