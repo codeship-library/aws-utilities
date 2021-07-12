@@ -1,12 +1,17 @@
 #!/bin/bash
 
 set -e
+set -x
 set -o pipefail
 
 APPLICATION_FOLDER=${1:?'You need to provide the directory with your code as the second parameter'}
 APPLICATION_NAME=${2:?'You need to provide the Elastic Beanstalk application name'}
 ENVIRONMENT_NAME=${3:?'You need to provide the Elastic Beanstalk environment name'}
 S3_BUCKET=${4:?'You need to provide the S3 Bucket to upload the artefact to'}
+
+
+echo "got to deploy"
+which aws
 
 source utils
 S3_BUCKET_SUBFOLDER_PATH=$(s3_bucket_subfolder_path $S3_BUCKET)
