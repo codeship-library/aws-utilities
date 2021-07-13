@@ -1,4 +1,4 @@
-FROM python:3.9-alpine
+FROM python:3.9.6-alpine3.13
 LABEL maintainer='Codeship Inc., <maintainers@codeship.com>'
 
 # which version of the AWS CLI to install.
