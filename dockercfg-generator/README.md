@@ -61,6 +61,22 @@ aws_dockercfg:
 
 You can also use this authentication to pull images, or use with caching, by defining the `dockercfg_service` field on groups of steps, or each individual step that pulls or pushes an image, or by adding the field to specific services.
 
+## ECR - public vs private repositories
+
+By default, this tool will generate docker configurations for pushing to an AWS ECR private registry, eg `123456789012.dkr.ecr.us-east-1.amazonaws.com/your-image`. These images are only visible within (I think) your AWS account via valid IAM users.
+
+AWS recently released public [ECR public repositories](https://docs.aws.amazon.com/AmazonECR/latest/public/public-repositories.html), eg `public.ecr.aws/abcd1234/your-image` that uses a different API to get credentials. In order to generate credentials for a public ECR repository, set the `ECR_PUBLIC` environment variable. An example push would be:
+
+```
+# codeship-steps.yml
+- service: app
+  type: push
+  tag: master
+  image_name: public.ecr.aws/abcd1234/my-app
+  registry: https://public.ecr.aws
+  dockercfg_service: aws_dockercfg
+```
+
 ## Troubleshooting
 
 #### "No basic auth credentials" error on push
