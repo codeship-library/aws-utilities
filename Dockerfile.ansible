@@ -1,5 +1,7 @@
 FROM ubuntu:18.04
 
+ENV LANG=C.UTF-8
+
 RUN \
   apt-get update && \
   apt-get install -y --no-install-recommends python3-setuptools python3-pip apt-transport-https ca-certificates wget rsync unzip jq zip curl && \
