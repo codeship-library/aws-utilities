@@ -39,18 +39,18 @@ fi
 
 # For public images stored in public.ecr.aws, we need to use a different CLI call
 if [[ -v ECR_PUBLIC ]]; then
-  COMMAND=ecr-public
   SERVER=public.ecr.aws
+  CREDS=$(aws ecr-public get-login-password --region=us-east-1)
 else
-  COMMAND=ecr
   SERVER=${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com
+  CREDS=$(aws ecr get-login-password --region=${AWS_REGION})
 fi
 
 # fetching aws docker login
 # aws deprecated the get-login function in favor of get-login-password
 # https://docs.aws.amazon.com/cli/latest/reference/ecr/get-login.html
 echo "Logging into AWS ECR with account ${AWS_ACCOUNT}"
-aws ${COMMAND} get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${SERVER}
+echo ${CREDS} | docker login --username AWS --password-stdin ${SERVER}
 
 # writing aws docker creds to desired path
 echo "Writing Docker creds to $1"
