@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
+APPLICATION_FOLDER=${1:?'You need to provide the directory with your code as the second parameter'}
+APPLICATION_NAME=${2:?'You need to provide the CodeDeploy application name'}
+S3_BUCKET=${3:?'You need to provide the S3 Bucket to upload the artefact to'}
+
+source utils
+S3_BUCKET_SUBFOLDER_PATH=$(s3_bucket_subfolder_path $S3_BUCKET)
+S3_BUCKET=$(s3_bucket_name $S3_BUCKET)
+
+echo "Pushing CodeDeploy revision to $APPLICATION_NAME"
+
+VERSION_NAME=${CI_COMMIT_ID}-${CI_BUILD_ID}-${CI_TIMESTAMP}
+FILE_NAME=$VERSION_NAME.zip
+
+if [[ -z $S3_BUCKET_SUBFOLDER_PATH ]]; then
+  S3_KEY=$FILE_NAME
+  S3_PATH="s3://$S3_BUCKET/$FILE_NAME"
+else
+  S3_KEY="$S3_BUCKET_SUBFOLDER_PATH/$FILE_NAME"
+  S3_PATH="s3://$S3_BUCKET/$S3_BUCKET_SUBFOLDER_PATH/$FILE_NAME"
+fi
+
+REVISION=$(aws deploy push --application-name "$APPLICATION_NAME" --description "$CI_COMMIT_MESSAGE" --ignore-hidden-files --s3-location "$S3_PATH" --source "$APPLICATION_FOLDER")
+
+echo "Revision uploaded key : $(echo $REVISION | awk -F 'eTag=| --deployment' '{print $2}' | tail -1), eTag : $(echo $REVISION | awk -F 'eTag=| --deployment' '{print $2}' | tail -1)"
