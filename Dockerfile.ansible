@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 ENV LANG=C.UTF-8
 
@@ -7,7 +7,7 @@ RUN \
   apt-get install -y --no-install-recommends python3-setuptools python3-pip apt-transport-https ca-certificates wget rsync unzip jq zip curl && \
   pip3 install --upgrade pip && \
   pip3 install wheel && \
-  pip3 install ansible==2.8.20 pyasn1==0.4.8 ndg-httpsclient==0.5.1 urllib3==1.26.3 awscli
+  pip3 install ansible-base==2.10.13 ansible==2.10.7 pyasn1==0.4.8 ndg-httpsclient==0.5.1 urllib3==1.26.6 awscli
 
 RUN mkdir /root/bin
 
