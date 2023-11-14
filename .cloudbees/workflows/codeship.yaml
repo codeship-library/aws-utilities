@@ -1,0 +1,397 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: CodeShip Pro
+"on":
+    push:
+        branches:
+            - '**'
+permissions:
+    scm-token-org: read
+    scm-token-own: read
+jobs:
+    all-services:
+        needs:
+            - service-base
+            - service-deployment
+            - service-deployment-ansible
+            - service-dockercfg-generator
+            - service-dockercfg-test
+            - service-dockercfg-test-generator
+        steps:
+            - uses: docker://alpine
+              run: "true"
+    service-base:
+        steps:
+            - name: checkout
+              uses: cloudbees-io/checkout@v1
+            - name: Fix permissions
+              uses: docker://alpine
+              run: chown -R root:root /cloudbees/workspace
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: Build base image using Kaniko
+              uses: cloudbees-io/kaniko@v1
+              with:
+                destination: ${{ steps.aws-login.outputs.aws-account-id }}.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/base:latest
+                dockerfile: Dockerfile
+    service-deployment:
+        steps:
+            - name: checkout
+              uses: cloudbees-io/checkout@v1
+            - name: Fix permissions
+              uses: docker://alpine
+              run: chown -R root:root /cloudbees/workspace
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: Build deployment image using Kaniko
+              uses: cloudbees-io/kaniko@v1
+              with:
+                destination: ${{ steps.aws-login.outputs.aws-account-id }}.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment:latest
+                dockerfile: Dockerfile
+    service-deployment-ansible:
+        steps:
+            - name: checkout
+              uses: cloudbees-io/checkout@v1
+            - name: Fix permissions
+              uses: docker://alpine
+              run: chown -R root:root /cloudbees/workspace
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: Build deployment-ansible image using Kaniko
+              uses: cloudbees-io/kaniko@v1
+              with:
+                destination: ${{ steps.aws-login.outputs.aws-account-id }}.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment-ansible:latest
+                dockerfile: Dockerfile.ansible
+    service-dockercfg-generator:
+        steps:
+            - name: checkout
+              uses: cloudbees-io/checkout@v1
+            - name: Fix permissions
+              uses: docker://alpine
+              run: chown -R root:root /cloudbees/workspace
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: Build dockercfg-generator image using Kaniko
+              uses: cloudbees-io/kaniko@v1
+              with:
+                destination: ${{ steps.aws-login.outputs.aws-account-id }}.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/dockercfg-generator:latest
+                dockerfile: Dockerfile
+    service-dockercfg-test:
+        steps:
+            - name: checkout
+              uses: cloudbees-io/checkout@v1
+            - name: Fix permissions
+              uses: docker://alpine
+              run: chown -R root:root /cloudbees/workspace
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: Build dockercfg-test image using Kaniko
+              uses: cloudbees-io/kaniko@v1
+              with:
+                destination: ${{ steps.aws-login.outputs.aws-account-id }}.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/dockercfg-test:latest
+                dockerfile: Dockerfile.test
+    service-dockercfg-test-generator:
+        steps:
+            - name: checkout
+              uses: cloudbees-io/checkout@v1
+            - name: Fix permissions
+              uses: docker://alpine
+              run: chown -R root:root /cloudbees/workspace
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: Build dockercfg-test-generator image using Kaniko
+              uses: cloudbees-io/kaniko@v1
+              with:
+                destination: ${{ steps.aws-login.outputs.aws-account-id }}.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/dockercfg-test-generator:latest
+                dockerfile: Dockerfile
+    step-build-base-image:
+        needs:
+            - all-services
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: build-base-image
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/base:latest
+              run: "true"
+    step-deploy-to-docker-hub-:
+        needs:
+            - step-test
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: deploy-to-docker-hub-
+              uses: docker://alpine
+              run: "true"
+    step-deploy-to-docker-hub-push-deployment:
+        needs:
+            - step-deploy-to-docker-hub-
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: deploy-to-docker-hub-push-deployment
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment:latest
+        if: cloudbees.scm.branch == 'master'
+    step-deploy-to-docker-hub-push-dockercfg--f508cf:
+        needs:
+            - step-deploy-to-docker-hub-push-deployment
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: deploy-to-docker-hub-push-dockercfg-generator
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/dockercfg-generator:latest
+        if: cloudbees.scm.branch == 'master'
+    step-test:
+        needs:
+            - step-test-deployment-ansible
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test
+              uses: docker://alpine
+              run: "true"
+    step-test-deployment-ansible:
+        needs:
+            - step-build-base-image
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test-deployment-ansible
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment-ansible:latest
+    step-test-deployment-ansible-check-for-to-3bfd19:
+        needs:
+            - step-test-deployment-ansible
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test-deployment-ansible-check-for-tooling-ansible
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment-ansible:latest
+              run: /deploy/test/test_tools_available.sh
+    step-test-deployment-ansible-tests-ansibl-3bfd19:
+        needs:
+            - step-test-deployment-ansible-tests-ansibl-3bfd19
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test-deployment-ansible-tests-ansible-code-deploy-ansible
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment-ansible:latest
+              run: /deploy/test/code_deploy/integration-test
+    step-test-deployment-ansible-tests-ansible:
+        needs:
+            - step-test-deployment-ansible-check-for-to-3bfd19
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test-deployment-ansible-tests-ansible
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment-ansible:latest
+    step-test-test-deployment:
+        needs:
+            - step-test
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test-test-deployment
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment:latest
+    step-test-test-deployment-check-for-kubectl-tool:
+        needs:
+            - step-test-test-deployment-check-for-tooling
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test-test-deployment-check-for-kubectl-tool
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment:latest
+              run: kubectl version --client
+    step-test-test-deployment-check-for-tooling:
+        needs:
+            - step-test-test-deployment
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test-test-deployment-check-for-tooling
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment:latest
+              run: /deploy/test/test_tools_available.sh
+    step-test-test-deployment-tests:
+        needs:
+            - step-test-test-deployment-check-for-kubectl-tool
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test-test-deployment-tests
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment:latest
+    step-test-test-deployment-tests-code-deploy:
+        needs:
+            - step-test-test-deployment-tests-elastic-b-83c01e
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test-test-deployment-tests-code-deploy
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment:latest
+              run: /deploy/test/code_deploy/integration-test
+    step-test-test-deployment-tests-elastic-b-83c01e:
+        needs:
+            - step-test-test-deployment-tests-s3-cp
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test-test-deployment-tests-elastic-beanstalk
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment:latest
+              run: /deploy/test/elastic_beanstalk/integration-test
+    step-test-test-deployment-tests-s3-cp:
+        needs:
+            - step-test-test-deployment-tests-s3-cp-archive
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test-test-deployment-tests-s3-cp
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment:latest
+              run: aws s3 cp /deploy/test/upload_to_s3 s3://codeship-aws-deployment-integration-test
+    step-test-test-deployment-tests-s3-cp-archive:
+        needs:
+            - step-test-test-deployment-tests-s3-ls
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test-test-deployment-tests-s3-cp-archive
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment:latest
+              run: aws s3 cp /deploy/tmp/upload_to_s3.zip s3://codeship-aws-deployment-integration-test
+    step-test-test-deployment-tests-s3-ls:
+        needs:
+            - step-test-test-deployment-tests
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test-test-deployment-tests-s3-ls
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/deployment:latest
+              run: aws s3 ls s3://codeship-aws-deployment-integration-test
+    step-test-test-dockercfg-generator:
+        needs:
+            - step-test-test-deployment
+        steps:
+            - id: aws-login
+              uses: cloudbees-io/configure-aws-credentials@v1
+              with:
+                aws-access-key-id: ${{ vars.app_flotsam_dev_AWS_ACCESS_KEY_ID }}
+                aws-region: us-east-1
+                aws-secret-access-key: ${{ secrets.app_flotsam_dev_AWS_SECRET_ACCESS_KEY }}
+            - uses: cloudbees-io/configure-ecr-credentials@v1
+            - name: test-test-dockercfg-generator
+              uses: docker://228670973478.dkr.ecr.us-east-1.amazonaws.com/codeship/codeship-library-aws-utilities/dockercfg-test:latest
