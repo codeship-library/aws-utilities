@@ -36,16 +36,16 @@
         - name: Tests
           type: parallel
           steps:
-          - name: S3, LS
-            command: aws s3 ls s3://codeship-aws-deployment-integration-test
-          - name: S3, CP Archive
-            command: aws s3 cp /deploy/tmp/upload_to_s3.zip s3://codeship-aws-deployment-integration-test
-          - name: S3, CP
-            command: aws s3 cp /deploy/test/upload_to_s3 s3://codeship-aws-deployment-integration-test
-          - name: Elastic Beanstalk
-            command: /deploy/test/elastic_beanstalk/integration-test
-          - name: Code Deploy
-            command: /deploy/test/code_deploy/integration-test
+            - name: S3, LS
+              command: aws s3 ls s3://codeship-aws-deployment-integration-test
+            - name: S3, CP Archive
+              command: aws s3 cp /deploy/tmp/upload_to_s3.zip s3://codeship-aws-deployment-integration-test
+            - name: S3, CP
+              command: aws s3 cp /deploy/test/upload_to_s3 s3://codeship-aws-deployment-integration-test
+            - name: Elastic Beanstalk
+              command: /deploy/test/elastic_beanstalk/integration-test
+            - name: Code Deploy
+              command: /deploy/test/code_deploy/integration-test
     - name: Test dockercfg Generator
       service: dockercfg-test
       type: push
