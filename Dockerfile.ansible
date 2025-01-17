@@ -1,12 +1,12 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 ENV LANG=C.UTF-8
+ENV PATH="/root/bin:/root/.local/bin:${PATH}"
 
 RUN \
   apt-get update && \
-  apt-get install -y --no-install-recommends python3-setuptools python3-pip apt-transport-https ca-certificates wget rsync unzip jq zip curl && \
-  pip3 install --upgrade pip && \
-  pip3 install ansible==6.7.0 awscli
+  apt-get install -y --no-install-recommends pipx python3-setuptools apt-transport-https ca-certificates wget rsync unzip jq zip curl && \
+  pipx install --include-deps ansible==10.7.0 awscli
 
 RUN mkdir /root/bin
 
@@ -16,5 +16,4 @@ COPY deployment /aws/deployment
 
 RUN ansible-playbook -i localhost -c local site.yml
 
-ENV PATH="/root/bin:${PATH}"
 ENV CODESHIP_VIRTUALENV="/root/.codeship-venv"

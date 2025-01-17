@@ -1,5 +1,5 @@
 ---
-# Mothership calls a local AWS CLI inside a Checkbot container for AWS deployment tasks.
+# Mothership calls a local AWS CLI inside a Basic container for AWS deployment tasks.
 # We preconfigure a virtualenv with AWS CLI to avoid upstream dependencies.
 
 - name: Stat
@@ -7,11 +7,22 @@
     path: "{{ codeship_venv }}"
   register: directory
 
-- name: Install virtualenv
+- name: Install virtualenv (Focal)
   ansible.builtin.pip:
     name: virtualenv
     state: present
-  when: not directory.stat.exists
+  when:
+    - not directory.stat.exists
+    - ansible_distribution_release == 'focal'
+
+- name: Install virtualenv (Noble)
+  ansible.builtin.apt:
+    name: python3-virtualenv
+    state: present
+    install_recommends: false
+  when:
+    - not directory.stat.exists
+    - ansible_distribution_release == 'noble'
 
 - name: Create virtualenv
   ansible.builtin.command: virtualenv --python={{ codeship_python }} {{ codeship_venv }}
@@ -27,11 +38,21 @@
   become_user: "{{ aws_user }}"
   when: not directory.stat.exists
 
-- name: Uninstall virtualenv
+- name: Uninstall virtualenv (Focal)
   ansible.builtin.pip:
     name: virtualenv
     state: absent
-  when: not directory.stat.exists
+  when:
+    - not directory.stat.exists
+    - ansible_distribution_release == 'focal'
+
+- name: Uninstall virtualenv (Noble)
+  ansible.builtin.apt:
+    name: python3-virtualenv
+    state: absent
+  when:
+    - not directory.stat.exists
+    - ansible_distribution_release == 'noble'
 
 - name: Move scripts into the container
   ansible.posix.synchronize:
