@@ -16,8 +16,8 @@ RUN \
 
 # Install kubectl from AWS
 # https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html
-ARG KUBECTL_VERSION="1.31.2"
-ARG KUBECTL_BUILD_DATE="2024-11-15"
+ARG KUBECTL_VERSION="1.32.0"
+ARG KUBECTL_BUILD_DATE="2025-01-10"
 
 RUN curl -L https://amazon-eks.s3-us-west-2.amazonaws.com/${KUBECTL_VERSION}/${KUBECTL_BUILD_DATE}/bin/linux/amd64/kubectl > /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl
