@@ -6,7 +6,7 @@ ENV PATH="/root/bin:/root/.local/bin:${PATH}"
 RUN \
   apt-get update && \
   apt-get install -y --no-install-recommends pipx python3-setuptools apt-transport-https ca-certificates wget rsync unzip jq zip curl && \
-  pipx install --include-deps ansible==10.7.0 awscli
+  pipx install --include-deps ansible==11.2.0 awscli
 
 RUN mkdir /root/bin
 
