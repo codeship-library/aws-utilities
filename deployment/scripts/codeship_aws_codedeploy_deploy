@@ -3,6 +3,8 @@
 set -e
 set -o pipefail
 
+#   This script also uses an environment variable called CODEDEPLOY_CLI_INPUT_JSON which when supplied, it
+# will be passed into the --cli-input-json argument for 'aws deploy create-deployment'
 APPLICATION_FOLDER=${1:?'You need to provide the directory with your code as the second parameter'}
 APPLICATION_NAME=${2:?'You need to provide the CodeDeploy application name'}
 DEPLOYMENT_GROUP_NAME=${3:?'You need to provide the Deployment Group name'}
@@ -36,6 +38,10 @@ deployment=("--application-name" "$APPLICATION_NAME" "--deployment-group-name" "
 
 if [ ! -z "$DEPLOYMENT_CONFIG_NAME" ]; then
   deployment+=("--deployment-config-name" "$DEPLOYMENT_CONFIG_NAME")
+fi
+
+if [ ! -z "$CODEDEPLOY_CLI_INPUT_JSON" ]; then
+  deployment+=("--cli-input-json" "$CODEDEPLOY_CLI_INPUT_JSON")
 fi
 
 echo "Deployment Command: ${deployment[@]}"
